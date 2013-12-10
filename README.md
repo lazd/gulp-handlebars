@@ -1,6 +1,6 @@
 # gulp-handlebars  [![Build status][travis-image]][travis-url]  [![NPM version][npm-image]][npm-url]
 
-> Handelbars plugin for gulp
+> Handlebars plugin for gulp
 
 ## Usage
 
