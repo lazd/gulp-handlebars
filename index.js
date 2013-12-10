@@ -3,22 +3,9 @@ var Handlebars = require('handlebars');
 var path = require('path');
 var os = require('os');
 var gutil = require('gulp-util');
+var extend = require('xtend');
 
-// TODO: Replace with gutil.linefeed once merged
-var newline = os.EOL || (process.platform === 'win32' ? '\r\n' : '\n');
-
-// TODO: Replace with gutil.extend once merged
-var extend = function() {
-  var i;
-  var prop;
-  var dest = arguments[0];
-  for (i = 1; i < arguments.length; i++) {
-    for (prop in arguments[i]) {
-      dest[prop] = arguments[i][prop];
-    }
-  }
-  return dest;
-};
+var newline = os.EOL;
 
 // Return a declaration and namespace name for output
 var getNSInfo = function(ns, omitLast) {
