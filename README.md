@@ -1,6 +1,6 @@
 # gulp-handlebars  [![Build status][travis-image]][travis-url]  [![NPM version][npm-image]][npm-url]
 
-> Handelbars plugin for Gulp
+> Handelbars plugin for gulp
 
 ## Usage
 
@@ -10,7 +10,7 @@ First, install `gulp-handlebars` as a development dependency:
 npm install --save-dev gulp-handlebars
 ```
 
-Then, add it to your `Gulpfile.js`:
+Then, add it to your `gulpfile.js`:
 
 ```javascript
 var jshint = require('gulp-handlebars');
