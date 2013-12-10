@@ -1,6 +1,6 @@
 # gulp-handlebars  [![Build status][travis-image]][travis-url]  [![NPM version][npm-image]][npm-url]
 
-> Handlebars plugin for gulp
+> Handlebars plugin for gulp 3
 
 ## Usage
 
@@ -13,7 +13,7 @@ npm install --save-dev gulp-handlebars
 Then, add it to your `gulpfile.js`:
 
 ```javascript
-var jshint = require('gulp-handlebars');
+var handlebars = require('gulp-handlebars');
 
 gulp.task('templates', function(){
   gulp.src(['client/templates/*.hbs'])
@@ -25,6 +25,7 @@ gulp.task('templates', function(){
     .pipe(gulp.dest('build/js/'));
 });
 ```
+
 ## Options
 
 ### namespace
