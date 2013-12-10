@@ -1,87 +1,44 @@
 var handlebarsPlugin = require('../');
 var should = require('should');
 var gutil = require('gulp-util');
+var os = require('os');
 var fs = require('fs');
 var path = require('path');
 require('mocha');
 
-var newline = process.platform === 'win32' ? '\r\n' : '\n';
+var newline = os.EOL || (process.platform === 'win32' ? '\r\n' : '\n');
+
+var getFixture = function(filePath) {
+  filePath = path.join('test', 'fixtures', filePath);
+  return new gutil.File({
+    path: filePath,
+    cwd: path.join('test', 'fixtures'),
+    base: path.dirname(filePath),
+    contents: fs.readFileSync(filePath)
+  });
+};
+
+var getExpectedString = function(filePath) {
+  return fs.readFileSync(path.join('test', 'expected', filePath), 'utf8');
+};
+
+var fileMatchesExpected = function(file, expectedFileName) {
+    String(file.contents).should.equal(getExpectedString(expectedFileName));
+};
 
 describe('gulp-handlebars', function() {
   describe('handlebarsPlugin()', function() {
 
-    it('should set correct fileName', function(done) {
-      var a = 0;
-
-      var animalTemplate = new gutil.File({
-        base: 'fixtures/',
-        path: 'fixtures/Animal.hbs',
-        contents: new Buffer('<p>The {{animal}} goes {{sound}}</p>')
-      });
-
+    it('should declare namespaces', function(done) {
       var stream = handlebarsPlugin({
-        fileName: 'Templates.js'
-      });
-      stream.on('data', function(newFile) {
-        should.exist(newFile);
-        should.exist(newFile.path);
-        should.exist(newFile.relative);
-        should.exist(newFile.contents);
-        newFile.path.should.equal('fixtures/Templates.js');
-        newFile.relative.should.equal('Templates.js');
-        ++a;
-      });
-
-      stream.once('end', function() {
-        a.should.equal(1);
-        done();
-      });
-
-      stream.write(animalTemplate);
-      stream.end();
-    });
-
-    it('should concat two templates files into one JS file', function(done) {
-      var stream = handlebarsPlugin({
-        fileName: 'templates.js'
+        outputType: 'browser',
+        namespace: 'MyApp.Templates',
+        declareNamespace: true
       });
 
       var appTemplate = new gutil.File({
-        base: 'fixtures/',
-        path: 'fixtures/App.hbs',
-        contents: new Buffer('<div class="app"></div>')
-      });
-
-      var animalTemplate = new gutil.File({
-        base: 'fixtures/',
-        path: 'fixtures/Animal.hbs',
-        contents: new Buffer('<p>The {{animal}} goes {{sound}}</p>')
-      });
-
-      stream.on('data', function(newFile) {
-        should.exist(newFile);
-        should.exist(newFile.path);
-        should.exist(newFile.relative);
-        should.exist(newFile.contents);
-        newFile.path.should.equal('fixtures/templates.js');
-        newFile.relative.should.equal('templates.js');
-        done();
-      });
-      stream.write(appTemplate);
-      stream.write(animalTemplate);
-      stream.end();
-    });
-
-
-    it('should declare the correct namespace for templates', function(done) {
-      var stream = handlebarsPlugin({
-        fileName: 'templates.js',
-        namespace: 'MyApp.Templates'
-      });
-
-      var appTemplate = new gutil.File({
-        base: 'fixtures/',
-        path: 'fixtures/App.hbs',
+        base: 'fixtures',
+        path: path.join('fixtures','App.Main.hbs'),
         contents: new Buffer('<div class="app"></div>')
       });
 
@@ -94,6 +51,181 @@ describe('gulp-handlebars', function() {
         done();
       });
       stream.write(appTemplate);
+      stream.end();
+    });
+
+    it('should declare the namespace for templates', function(done) {
+      var stream = handlebarsPlugin({
+        outputType: 'browser',
+        namespace: 'MyApp.Templates',
+        declareNamespace: true
+      });
+
+      var appTemplate = new gutil.File({
+        base: 'fixtures',
+        path: path.join('fixtures','App.Main.hbs'),
+        contents: new Buffer('<div class="app"></div>')
+      });
+
+      stream.on('data', function(newFile) {
+        should.exist(newFile);
+        should.exist(newFile.contents);
+        var contents = String(newFile.contents).split(newline);
+        contents[0].should.equal('this["MyApp"] = this["MyApp"] || {};');
+        contents[1].should.equal('this["MyApp"]["Templates"] = this["MyApp"]["Templates"] || {};');
+        contents[2].should.equal('this["MyApp"]["Templates"]["App"] = this["MyApp"]["Templates"]["App"] || {};');
+        done();
+      });
+      stream.write(appTemplate);
+      stream.end();
+    });
+
+    it('should compile unwrapped bare templates', function(done) {
+      var stream = handlebarsPlugin({
+        outputType: 'bare',
+        wrapped: false,
+        namespace: false
+      });
+
+      var basicTemplate = getFixture('Basic.hbs');
+
+      stream.on('data', function(newFile) {
+        should.exist(newFile);
+        should.exist(newFile.contents);
+        fileMatchesExpected(newFile, 'Basic_bare_unwrapped.js');
+        done();
+      });
+      stream.write(basicTemplate);
+      stream.end();
+    });
+
+    it('should compile wrapped bare templates', function(done) {
+      var stream = handlebarsPlugin({
+        outputType: 'bare',
+        wrapped: true,
+        namespace: false
+      });
+
+      var basicTemplate = getFixture('Basic.hbs');
+
+      stream.on('data', function(newFile) {
+        should.exist(newFile);
+        should.exist(newFile.contents);
+        fileMatchesExpected(newFile, 'Basic_bare.js');
+        done();
+      });
+      stream.write(basicTemplate);
+      stream.end();
+    });
+
+    it('should compile templates for the browser', function(done) {
+      var stream = handlebarsPlugin({
+        outputType: 'browser',
+        namespace: false
+      });
+
+      var basicTemplate = getFixture('Basic.hbs');
+
+      stream.on('data', function(newFile) {
+        should.exist(newFile);
+        should.exist(newFile.contents);
+        fileMatchesExpected(newFile, 'Basic_browser.js');
+        done();
+      });
+      stream.write(basicTemplate);
+      stream.end();
+    });
+
+    it('should compile templates for AMD', function(done) {
+      var stream = handlebarsPlugin({
+        outputType: 'amd',
+        namespace: false
+      });
+
+      var basicTemplate = getFixture('Basic.hbs');
+
+      stream.on('data', function(newFile) {
+        should.exist(newFile);
+        should.exist(newFile.contents);
+        fileMatchesExpected(newFile, 'Basic_amd.js');
+        done();
+      });
+      stream.write(basicTemplate);
+      stream.end();
+    });
+
+    it('should compile templates for CommonJS', function(done) {
+      var stream = handlebarsPlugin({
+        outputType: 'commonjs',
+        namespace: false
+      });
+
+      var basicTemplate = getFixture('Basic.hbs');
+
+      stream.on('data', function(newFile) {
+        should.exist(newFile);
+        should.exist(newFile.contents);
+        fileMatchesExpected(newFile, 'Basic_commonjs.js');
+        done();
+      });
+      stream.write(basicTemplate);
+      stream.end();
+    });
+
+    it('should compile templates for Node', function(done) {
+      var stream = handlebarsPlugin({
+        outputType: 'node',
+        namespace: false
+      });
+
+      var basicTemplate = getFixture('Basic.hbs');
+
+      stream.on('data', function(newFile) {
+        should.exist(newFile);
+        should.exist(newFile.contents);
+        fileMatchesExpected(newFile, 'Basic_node.js');
+        done();
+      });
+      stream.write(basicTemplate);
+      stream.end();
+    });
+
+    it('should compile hybrid Node/browser templates', function(done) {
+      var stream = handlebarsPlugin({
+        outputType: 'hybrid',
+        namespace: false
+      });
+
+      var basicTemplate = getFixture('Basic.hbs');
+
+      stream.on('data', function(newFile) {
+        should.exist(newFile);
+        should.exist(newFile.contents);
+        fileMatchesExpected(newFile, 'Basic_hybrid.js');
+        done();
+      });
+      stream.write(basicTemplate);
+      stream.end();
+    });
+
+    it('should support custom processName functions', function(done) {
+      var stream = handlebarsPlugin({
+        outputType: 'browser',
+        namespace: false,
+        processName: function(name) {
+          return 'x';
+        }
+      });
+
+      var basicTemplate = getFixture('Basic.hbs');
+
+      stream.on('data', function(newFile) {
+        should.exist(newFile);
+        should.exist(newFile.path);
+        newFile.path.should.equal('test/fixtures/x.js');
+        done();
+      });
+      stream.write(basicTemplate);
       stream.end();
     });
 
