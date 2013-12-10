@@ -1,4 +1,4 @@
-# gulp-handlebars
+# gulp-handlebars  [![Build status][travis-image]][travis-url]  [![NPM version][npm-image]][npm-url]
 
 > Handelbars plugin for Gulp
 
@@ -23,7 +23,6 @@ gulp.task('templates', function(){
     .pipe(gulp.dest('build/js/'));
 });
 ```
-
 ## Options
 
 ### fileName
@@ -46,3 +45,9 @@ This option accepts a function which takes one argument (the template filepath) 
 Type: `Object`
 
 Compiler options to pass to `Handlebars.precompile()`.
+
+
+[travis-url]: http://travis-ci.org/lazd/gulp-handlebars
+[travis-image]: https://secure.travis-ci.org/lazd/gulp-handlebars.png?branch=master
+[npm-url]: https://npmjs.org/package/gulp-handlebars
+[npm-image]: https://badge.fury.io/js/gulp-handlebars.png

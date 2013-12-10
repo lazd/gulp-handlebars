@@ -3,6 +3,8 @@ var Handlebars = require('handlebars');
 var path = require('path');
 var gutil = require('gulp-util');
 
+var newline = process.platform === 'win32' ? '\r\n' : '\n';
+
 // Return a declaration and namespace name for output
 var getNSDeclaration = function(ns) {
   var output = [];
@@ -19,7 +21,7 @@ var getNSDeclaration = function(ns) {
 
   return {
     namespace: curPath,
-    declaration: output.join('\n')
+    declaration: output.join(newline)
   };
 };
 
@@ -57,15 +59,14 @@ module.exports = function(options) {
     if (buffer.length === 0) return this.emit('end');
 
     // Include declaration
-    var fileContents = nsInfo.declaration+'\r\n';
+    var fileContents = nsInfo.declaration+newline;
 
     // Include each of the templates
     fileContents += buffer.map(function(file){
       return file.contents;
-    }).join('\r\n');
+    }).join(newline);
 
     var joinedPath = path.join(buffer[0].base, options.fileName);
-
     var joinedFile = new gutil.File({
       cwd: buffer[0].cwd,
       base: buffer[0].base,
