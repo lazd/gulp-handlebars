@@ -1,26 +1,49 @@
 var es = require('event-stream');
 var Handlebars = require('handlebars');
 var path = require('path');
+var os = require('os');
 var gutil = require('gulp-util');
 
-var newline = process.platform === 'win32' ? '\r\n' : '\n';
+// TODO: Replace with gutil.linefeed once merged
+var newline = os.EOL || (process.platform === 'win32' ? '\r\n' : '\n');
+
+// TODO: Replace with gutil.extend once merged
+var extend = function() {
+  var i;
+  var prop;
+  var dest = arguments[0];
+  for (i = 1; i < arguments.length; i++) {
+    for (prop in arguments[i]) {
+      dest[prop] = arguments[i][prop];
+    }
+  }
+  return dest;
+};
 
 // Return a declaration and namespace name for output
-var getNSDeclaration = function(ns) {
+var getNSInfo = function(ns, omitLast) {
   var output = [];
   var curPath = 'this';
   if (ns !== 'this') {
     var nsParts = ns.split('.');
-    nsParts.forEach(function(curPart, index) {
+    nsParts.some(function(curPart, index) {
       if (curPart !== 'this') {
         curPath += '[' + JSON.stringify(curPart) + ']';
-        output.push(curPath + ' = ' + curPath + ' || {};');
+
+        // Ignore the last part of the namespace, it will be used for assignment
+        if (omitLast && index === nsParts.length - 1) {
+          return true;
+        }
+        else {
+          output.push(curPath + ' = ' + curPath + ' || {};');
+        }
       }
     });
   }
 
   return {
     namespace: curPath,
+    pathParts: output,
     declaration: output.join(newline)
   };
 };
@@ -29,13 +52,19 @@ var getNSDeclaration = function(ns) {
 var defaultProcessName = function(name) { return path.basename(name, path.extname(name)); };
 
 module.exports = function(options) {
-  if (!options.fileName) throw new Error('Missing fileName option for gulp-handlebars');
+  options = extend({
+    compilerOptions: {},
+    declareNamespace: true,
+    wrapped: true,
+    outputType: 'browser', // browser, amd, commonjs, node, hybrid, bare
+    processName: defaultProcessName,
+    namespace: 'templates'
+  }, options);
 
-  var compilerOptions = options.compilerOptions || {};
-  var processName = options.processName || defaultProcessName;
-  var ns = options.namespace || 'templates';
-
-  var nsInfo = getNSDeclaration(ns);
+  // Never declare namespaces if not provided
+  if (!options.nameSpace) {
+    options.declareNamespace = false;
+  }
 
   var buffer = [];
 
@@ -44,45 +73,81 @@ module.exports = function(options) {
     var newFile = new gutil.File(file);
 
     // Get the name of the template
-    var name = processName(file.path);
+    var name = options.processName(file.path);
 
     // Perform pre-compilation
     try {
-      var compiled = Handlebars.precompile(String(newFile.contents), compilerOptions);
+      var compiled = Handlebars.precompile(newFile.contents.toString(), options.compilerOptions);
     }
     catch(err) {
       return callback(err, file);
     }
 
-    compiled = nsInfo.namespace+'['+JSON.stringify(name)+'] = '+compiled+';';
+    if (options.wrapped) {
+      compiled = 'Handebars.template('+compiled+')';
+    }
 
+    // Handle different output times
+    if (options.outputType === 'browser' || options.outputType === 'hybrid') {
+      // Prepend namespace to name
+      if (options.namespace !== false) {
+        name = options.namespace+'.'+name;
+      }
+
+      // Get namespace information for the final template name
+      var nameNSInfo = getNSInfo(name, true);
+
+      if (options.outputType === 'hybrid') {
+        var templateDef = compiled;
+        
+        compiled = "(function(g) {";
+
+        // Handlebars is only necessary when wrapped
+        if (options.wrapped) {
+          compiled += "var Handlebars = g.Handlebars || require('handlebars');";
+        }
+
+        if (options.declareNamespace) {
+          compiled += nameNSInfo.declaration+newline+compiled;
+        }
+
+        compiled += "var template = "+templateDef+"; if (typeof exports === 'object' && exports) module.exports = template;";
+        compiled += nameNSInfo.namespace+' = template;';
+        compiled += '}(window || global));';
+      }
+      else {
+        // Add assignment
+        compiled = nameNSInfo.namespace+' = '+compiled+';';
+
+        if (options.declareNamespace) {
+          // Tack on namespace declaration, if necessary
+          compiled = nameNSInfo.declaration+newline+compiled;
+        }
+      }
+    }
+    else if (options.outputType === 'amd') {
+      compiled = "define(['handlebars'], function(Handlebars) {return "+compiled+";});";
+    }
+    else if (options.outputType === 'commonjs') {
+      compiled = "module.exports = function(Handlebars) {return "+compiled+";});";
+    }
+    else if (options.outputType === 'node') {
+      compiled = "module.exports = "+compiled+";";
+      if (options.wrapped) {
+        // Handlebars is only necessary when wrapped
+        compiled = "Handlebars = global.Handlebars || require('handlebars');"+compiled;
+      }
+    }
+    else if (options.outputType !== 'bare') {
+      callback(new Error('Invalid output type: '+options.outputType), file);
+    }
+
+    newFile.path = path.join(path.dirname(newFile.path), name+'.js');
+    newFile.shortened = newFile.shortened && ext(newFile.shortened, '.js');
     newFile.contents = new Buffer(compiled);
 
-    buffer.push(newFile);
+    callback(null, newFile);
   };
 
-  var endStream = function() {
-    if (buffer.length === 0) return this.emit('end');
-
-    // Include declaration
-    var fileContents = nsInfo.declaration+newline;
-
-    // Include each of the templates
-    fileContents += buffer.map(function(file){
-      return file.contents;
-    }).join(newline);
-
-    var joinedPath = path.join(buffer[0].base, options.fileName);
-    var joinedFile = new gutil.File({
-      cwd: buffer[0].cwd,
-      base: buffer[0].base,
-      path: joinedPath,
-      contents: fileContents
-    });
-
-    this.emit('data', joinedFile);
-    this.emit('end');
-  };
-
-  return es.through(compileHandlebars, endStream);
+  return es.map(compileHandlebars);
 };
