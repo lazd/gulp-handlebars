@@ -5,8 +5,6 @@ var os = require('os');
 var gutil = require('gulp-util');
 var extend = require('xtend');
 
-var newline = os.EOL;
-
 // Return a declaration and namespace name for output
 var getNSInfo = function(ns, omitLast) {
   var output = [];
@@ -31,7 +29,7 @@ var getNSInfo = function(ns, omitLast) {
   return {
     namespace: curPath,
     pathParts: output,
-    declaration: output.join(newline)
+    declaration: output.join('')
   };
 };
 
@@ -56,15 +54,12 @@ module.exports = function(options) {
   var buffer = [];
 
   var compileHandlebars = function(file, callback) {
-    // Clone the file object
-    var newFile = new gutil.File(file);
-
     // Get the name of the template
     var name = options.processName(file.path);
 
     // Perform pre-compilation
     try {
-      var compiled = Handlebars.precompile(newFile.contents.toString(), options.compilerOptions);
+      var compiled = Handlebars.precompile(file.contents.toString(), options.compilerOptions);
     }
     catch(err) {
       return callback(err, file);
@@ -88,16 +83,16 @@ module.exports = function(options) {
         var templateDef = compiled;
 
         compiled = "(function(g) {";
-        compiled += newline+"var Handlebars = g.Handlebars || require('handlebars');";
+        compiled += "var Handlebars = g.Handlebars || require('handlebars');";
 
         if (options.declareNamespace) {
-          compiled += nameNSInfo.declaration+newline+compiled;
+          compiled += nameNSInfo.declaration+compiled;
         }
 
-        compiled += newline+"var template = "+templateDef+";"
-        compiled += newline+"if (typeof exports === 'object' && exports) module.exports = template;";
-        compiled += newline+nameNSInfo.namespace+' = template;';
-        compiled += newline+"}(typeof window !== 'undefined' ? window : global));";
+        compiled += "var template = "+templateDef+";"
+        compiled += "if (typeof exports === 'object' && exports) module.exports = template;";
+        compiled += nameNSInfo.namespace+' = template;';
+        compiled += "}(typeof window !== 'undefined' ? window : global));";
       }
       else {
         // Add assignment
@@ -105,7 +100,7 @@ module.exports = function(options) {
 
         if (options.declareNamespace) {
           // Tack on namespace declaration, if necessary
-          compiled = nameNSInfo.declaration+newline+compiled;
+          compiled = nameNSInfo.declaration+compiled;
         }
       }
     }
@@ -117,17 +112,16 @@ module.exports = function(options) {
     }
     else if (options.outputType === 'node') {
       compiled = "module.exports = "+compiled+";";
-      compiled = "var Handlebars = global.Handlebars || require('handlebars');"+newline+compiled;
+      compiled = "var Handlebars = global.Handlebars || require('handlebars');"+compiled;
     }
     else if (options.outputType !== 'bare') {
       callback(new Error('Invalid output type: '+options.outputType), file);
     }
 
-    newFile.path = path.join(path.dirname(newFile.path), name+'.js');
-    newFile.shortened = newFile.shortened && ext(newFile.shortened, '.js');
-    newFile.contents = new Buffer(compiled);
+    file.path = path.join(path.dirname(file.path), name+'.js');
+    file.contents = new Buffer(compiled);
 
-    callback(null, newFile);
+    callback(null, file);
   };
 
   return es.map(compileHandlebars);

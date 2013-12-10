@@ -6,8 +6,6 @@ var fs = require('fs');
 var path = require('path');
 require('mocha');
 
-var newline = os.EOL || (process.platform === 'win32' ? '\r\n' : '\n');
-
 var getFixture = function(filePath) {
   filePath = path.join('test', 'fixtures', filePath);
   return new gutil.File({
@@ -45,9 +43,8 @@ describe('gulp-handlebars', function() {
       stream.on('data', function(newFile) {
         should.exist(newFile);
         should.exist(newFile.contents);
-        var contents = String(newFile.contents).split(newline);
-        contents[0].should.equal('this["MyApp"] = this["MyApp"] || {};');
-        contents[1].should.equal('this["MyApp"]["Templates"] = this["MyApp"]["Templates"] || {};');
+        var contents = String(newFile.contents);
+        contents.slice(0, 98).should.equal('this["MyApp"] = this["MyApp"] || {};this["MyApp"]["Templates"] = this["MyApp"]["Templates"] || {};');
         done();
       });
       stream.write(appTemplate);
@@ -70,10 +67,8 @@ describe('gulp-handlebars', function() {
       stream.on('data', function(newFile) {
         should.exist(newFile);
         should.exist(newFile.contents);
-        var contents = String(newFile.contents).split(newline);
-        contents[0].should.equal('this["MyApp"] = this["MyApp"] || {};');
-        contents[1].should.equal('this["MyApp"]["Templates"] = this["MyApp"]["Templates"] || {};');
-        contents[2].should.equal('this["MyApp"]["Templates"]["App"] = this["MyApp"]["Templates"]["App"] || {};');
+        var contents = String(newFile.contents);
+        contents.slice(0,174).should.equal('this["MyApp"] = this["MyApp"] || {};this["MyApp"]["Templates"] = this["MyApp"]["Templates"] || {};this["MyApp"]["Templates"]["App"] = this["MyApp"]["Templates"]["App"] || {};');
         done();
       });
       stream.write(appTemplate);
