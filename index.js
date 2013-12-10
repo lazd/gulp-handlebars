@@ -47,7 +47,13 @@ module.exports = function(options) {
     var name = processName(file.path);
 
     // Perform pre-compilation
-    var compiled = Handlebars.precompile(String(newFile.contents), compilerOptions);
+    try {
+      var compiled = Handlebars.precompile(String(newFile.contents), compilerOptions);
+    }
+    catch(err) {
+      return callback(err, file);
+    }
+
     compiled = nsInfo.namespace+'['+JSON.stringify(name)+'] = '+compiled+';';
 
     newFile.contents = new Buffer(compiled);
