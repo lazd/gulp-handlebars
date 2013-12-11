@@ -1,7 +1,7 @@
 {
   "name": "gulp-handlebars",
   "version": "0.2.2",
-  "description": "Handlebars plugin for Gulp",
+  "description": "Handlebars plugin for gulp",
   "main": "index.js",
   "dependencies": {
     "gulp-util": "~1.2.0",
