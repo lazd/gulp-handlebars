@@ -25,15 +25,17 @@ gulp.task('templates', function(){
 });
 ```
 
-## Options
+## API
 
-### namespace
+### handlebars(options)
+
+#### options.namespace
 Type: `String`  
 Default: `templates`
 
 The namespace in which the precompiled templates will be assigned. Use dot notation (e.g. `App.Templates`) for nested namespaces or false to declare templates in the global namespace.
 
-### outputType
+#### options.outputType
 Type: `String`  
 Default: `browser`
 
@@ -46,7 +48,7 @@ The desired output type. One of the following:
 * `commonjs` - Produce CommonJS modules
 * `bare` - Return an unmolested function definition
 
-### declareNamespace
+#### options.declareNamespace
 Type: `Boolean`  
 Default: `true`
 
@@ -63,7 +65,7 @@ this["MyApp"]["templates"]["App"]["Header"] = function () {};
 
 When processing multiple templates under a given namespace, this will result in duplicate declarations. That is, the non-destructive declaration of the namespace will be repeated for each template compiled.
 
-### processName
+#### options.processName
 Type: `Function`  
 Default: Strip file extension
 
@@ -71,7 +73,7 @@ This option accepts a function which takes one argument (the template filepath) 
 
 If this function returns a string containing periods (not including the file extension), they will be represented as a sub-namespace. See `options.declareNamespace` for an example of the effect.
 
-### compilerOptions
+#### options.compilerOptions
 Type: `Object`
 
 Compiler options to pass to `Handlebars.precompile()`.
