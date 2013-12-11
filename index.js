@@ -1,7 +1,6 @@
 var es = require('event-stream');
 var Handlebars = require('handlebars');
 var path = require('path');
-var os = require('os');
 var gutil = require('gulp-util');
 var extend = require('xtend');
 
@@ -50,8 +49,6 @@ module.exports = function(options) {
   if (!options.namespace) {
     options.declareNamespace = false;
   }
-
-  var buffer = [];
 
   var compileHandlebars = function(file, callback) {
     // Get the name of the template
