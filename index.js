@@ -1,118 +1,111 @@
-var es = require('event-stream');
-var Handlebars = require('handlebars');
-var path = require('path');
-var gutil = require('gulp-util');
-var extend = require('xtend');
+'use strict';
 
-// Return a declaration and namespace name for output
-var getNSInfo = function(ns, omitLast) {
-  var output = [];
-  var curPath = 'this';
-  if (ns !== 'this') {
-    var nsParts = ns.split('.');
-    nsParts.some(function(curPart, index) {
-      if (curPart !== 'this') {
-        curPath += '[' + JSON.stringify(curPart) + ']';
+var es = require('event-stream'),
+    path = require('path'),
+    gutil = require('gulp-util'),
+    compiler = require('ember-template-compiler');
 
-        // Ignore the last part of the namespace, it will be used for assignment
-        if (omitLast && index === nsParts.length - 1) {
-          return true;
-        }
-        else {
-          output.push(curPath + ' = ' + curPath + ' || {};');
-        }
-      }
-    });
-  }
-
-  return {
-    namespace: curPath,
-    pathParts: output,
-    declaration: output.join('')
-  };
-};
 
 // Default name processing function should give the filename without extension
-var defaultProcessName = function(name) { return path.basename(name, path.extname(name)); };
+var defaultProcessName = function (name) { return path.basename(name, path.extname(name)); };
 
-module.exports = function(options) {
-  options = extend({
-    compilerOptions: {},
-    declareNamespace: true,
-    wrapped: true,
-    outputType: 'browser', // browser, amd, commonjs, node, hybrid, bare
-    processName: defaultProcessName,
-    namespace: 'templates'
-  }, options);
 
-  // Never declare namespaces if not provided
-  if (!options.namespace) {
-    options.declareNamespace = false;
+/**
+ * @param {File} file Is the gulp.File
+ * @param {String} templateRoot Is the templates directory name (i.e., "templates").
+ * @param {String} name Is the template name without any extensions.
+ * @param {String} compiled Is the pre-compiled Ember.Handlebars template text.
+ *
+ * @return {Object} Return a template context used by the wrapper functions.
+ */
+function ctx(file, templateRoot, name, compiled) {
+  var pathParts = file.path.split('/'),
+      templatePartIndex = pathParts.lastIndexOf(templateRoot),
+      moduleName = pathParts.slice(templatePartIndex, - 1).join('/').concat('/', name);
+
+  return {
+    compiled: compiled,
+    file: file, // Required by gutil.template().
+    moduleName: moduleName,
+    name: name
+  };
+}
+
+
+/**
+ * @param {Object} ctx Is the wrapper template's context.
+ * @return {String} Returns a compiled Ember.Handlebars template text using an AMD-style module wrapper.
+ */
+function toAMD(ctx) {
+  return gutil.template('define("<%= moduleName %>", function () { return Ember.TEMPLATES["<%= name %>"] = <%= compiled %>; });', ctx);
+}
+
+
+/**
+ * @param {Object} ctx Is the wrapper template's context.
+ * @param {String|Boolean} namespace
+ *
+ * @return {String} Returns a compiled Ember.Handlebars template text for use directly in the browser.
+ */
+function toBrowser(ctx, namespace) {
+  var target = ctx.moduleName.replace('/', '.');
+
+  // Prepend namespace to name
+  if (namespace) {
+    target = namespace + '.' + target;
   }
 
-  var compileHandlebars = function(file, callback) {
+  // Assign to target.
+  return target.concat(' = ', ctx.compiled, ';');
+}
+
+
+/**
+ * @param {Object} ctx Is the wrapper template's context.
+ * @return {String} Returns a compiled Ember.Handlebars template text using an CommonJS-style module wrapper.
+ */
+function toCommonJS(ctx) {
+  return gutil.template('module.exports = Ember.TEMPLATES["<%= name %>"] = <%= compiled %>;', ctx);
+}
+
+
+module.exports = function (options) {
+  var outputType = options.outputType || 'browser', // amd, browser, cjs
+      namespace = options.namespace || 'window',
+      templateRoot = options.templateRoot || 'templates',
+      processName = options.processName || defaultProcessName,
+      compilerOptions = options.compilerOptions || {},
+      compileHandlebars;
+
+  compileHandlebars = function (file, callback) {
+    var compiled;
+
     // Get the name of the template
-    var name = options.processName(file.path);
+    var name = processName(file.path);
 
     // Perform pre-compilation
     try {
-      var compiled = Handlebars.precompile(file.contents.toString(), options.compilerOptions);
+      compiled = compiler.precompile(file.contents.toString(), compilerOptions);
     }
     catch(err) {
       return callback(err, file);
     }
 
-    if (options.wrapped) {
-      compiled = 'Handlebars.template('+compiled+')';
-    }
+    // Surround the raw output as an Ember.Handlebars.template.
+    compiled = 'Ember.Handlebars.template('.concat(compiled, ')');
 
-    // Handle different output times
-    if (options.outputType === 'browser' || options.outputType === 'hybrid') {
-      // Prepend namespace to name
-      if (options.namespace !== false) {
-        name = options.namespace+'.'+name;
-      }
-
-      // Get namespace information for the final template name
-      var nameNSInfo = getNSInfo(name, true);
-
-      if (options.outputType === 'hybrid') {
-        var templateDef = compiled;
-
-        compiled = "(function(g) {";
-        compiled += "var Handlebars = g.Handlebars || require('handlebars');";
-
-        if (options.declareNamespace) {
-          compiled += nameNSInfo.declaration+compiled;
-        }
-
-        compiled += "var template = "+templateDef+";"
-        compiled += "if (typeof exports === 'object' && exports) module.exports = template;";
-        compiled += nameNSInfo.namespace+' = template;';
-        compiled += "}(typeof window !== 'undefined' ? window : global));";
-      }
-      else {
-        // Add assignment
-        compiled = nameNSInfo.namespace+' = '+compiled+';';
-
-        if (options.declareNamespace) {
-          // Tack on namespace declaration, if necessary
-          compiled = nameNSInfo.declaration+compiled;
-        }
-      }
-    }
-    else if (options.outputType === 'amd') {
-      compiled = "define(['handlebars'], function(Handlebars) {return "+compiled+";});";
-    }
-    else if (options.outputType === 'commonjs') {
-      compiled = "module.exports = function(Handlebars) {return "+compiled+";};";
-    }
-    else if (options.outputType === 'node') {
-      compiled = "module.exports = "+compiled+";";
-      compiled = "var Handlebars = global.Handlebars || require('handlebars');"+compiled;
-    }
-    else if (options.outputType !== 'bare') {
-      callback(new Error('Invalid output type: '+options.outputType), file);
+    switch (outputType) {
+    case 'amd':
+      compiled = toAMD(ctx(file, templateRoot, name, compiled));
+      break;
+    case 'browser':
+      compiled = toBrowser(ctx(file, templateRoot, name, compiled), namespace);
+      break;
+    case 'cjs':
+      compiled = toCommonJS(ctx(file, templateRoot, name, compiled));
+      break;
+    default:
+      callback(new Error('Invalid output type: ' + outputType), file);
     }
 
     file.path = path.join(path.dirname(file.path), name+'.js');
