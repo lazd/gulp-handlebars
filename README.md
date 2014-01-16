@@ -68,4 +68,4 @@ Compiler options to pass to `Ember.Handlebars.precompile()`.
 [travis-url]: http://travis-ci.org/fuseelements/gulp-ember-handlebars
 [travis-image]: https://secure.travis-ci.org/fuseelements/gulp-ember-handlebars.png?branch=master
 [npm-url]: https://npmjs.org/package/gulp-ember-handlebars
-[npm-image]: https://badge.fury.io/js/gulp-ember-handlebars.png
+[npm-image]: https://badge.fury.io/gh/fuseelements%2Fgulp-ember-handlebars.png
