@@ -48,6 +48,12 @@ The desired output type. One of the following:
 * `commonjs` - Produce CommonJS modules
 * `bare` - Return an unmolested function definition
 
+#### options.wrapped
+Type: `Boolean`  
+Default: `true`
+
+Whether to wrap compiled template functions in a call to `Handlebars.template`.
+
 #### options.declareNamespace
 Type: `Boolean`  
 Default: `true`
