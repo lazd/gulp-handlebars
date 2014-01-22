@@ -4,12 +4,14 @@
   "description": "Handlebars plugin for gulp",
   "main": "index.js",
   "dependencies": {
-    "event-stream": "~3.0.18",
+    "vinyl-map": "0.0.1",
     "handlebars": "~1.1.2",
-    "xtend": "~2.1.1"
+    "xtend": "~2.1.1",
+    "gulp-rename": "~0.2.2",
+    "event-stream": "~3.1.0"
   },
   "devDependencies": {
-    "gulp-util": "~1.2.0",
+    "gulp-util": "~2.2.12",
     "should": "~2.1.1",
     "mocha": "~1.15.1"
   },
@@ -30,6 +32,6 @@
     "url": "https://github.com/lazd/gulp-handlebars/issues"
   },
   "engines": {
-    "node" : ">=0.6"
+    "node": ">=0.6"
   }
 }

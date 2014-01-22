@@ -1,7 +1,10 @@
+var map = require('vinyl-map');
 var es = require('event-stream');
+var rename = require('gulp-rename');
 var Handlebars = require('handlebars');
-var path = require('path');
 var extend = require('xtend');
+
+var outputTypes = ['amd', 'commonjs', 'node', 'bare'];
 
 module.exports = function(options) {
   options = extend({
@@ -10,18 +13,14 @@ module.exports = function(options) {
     outputType: 'bare' // amd, commonjs, node, bare
   }, options);
 
-  var compileHandlebars = function(file, callback) {
-    // Get the name of the template
-    var name = file.path;
-    name = path.basename(name, path.extname(name));
+  if (outputTypes.indexOf(options.outputType) === -1) {
+    throw new Error('Invalid output type: '+options.outputType);
+  }
 
+  var compileHandlebars = function(contents, path) {
     // Perform pre-compilation
-    try {
-      var compiled = Handlebars.precompile(file.contents.toString(), options.compilerOptions);
-    }
-    catch(err) {
-      return callback(err, file);
-    }
+    // This will throw if errors are encountered
+    var compiled = Handlebars.precompile(contents.toString(), options.compilerOptions);
 
     if (options.wrapped) {
       compiled = 'Handlebars.template('+compiled+')';
@@ -36,17 +35,23 @@ module.exports = function(options) {
     }
     else if (options.outputType === 'node') {
       compiled = "module.exports = "+compiled+";";
-      compiled = "var Handlebars = global.Handlebars || require('handlebars');"+compiled;
-    }
-    else if (options.outputType !== 'bare') {
-      callback(new Error('Invalid output type: '+options.outputType), file);
+
+      if (options.wrapped) {
+        // Only require Handlebars if wrapped
+        compiled = "var Handlebars = global.Handlebars || require('handlebars');"+compiled;
+      }
     }
 
-    file.path = path.join(path.dirname(file.path), name+'.js');
-    file.contents = new Buffer(compiled);
-
-    callback(null, file);
+    return compiled;
   };
 
-  return es.map(compileHandlebars);
+  var doRename = function(dir, base, ext) {
+    // Change the extension to .js
+    return base+'.js';
+  };
+
+  return es.pipeline(
+    map(compileHandlebars),
+    rename(doRename)
+  );
 };

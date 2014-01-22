@@ -20,12 +20,21 @@ var getExpectedString = function(filePath) {
   return fs.readFileSync(path.join('test', 'expected', filePath), 'utf8');
 };
 
-var fileMatchesExpected = function(file, expectedFileName) {
-    String(file.contents).should.equal(getExpectedString(expectedFileName));
+var fileMatchesExpected = function(file, fixtureFilename) {
+  path.basename(file.path).should.equal('Basic.js');  
+  String(file.contents).should.equal(getExpectedString(fixtureFilename));
 };
 
 describe('gulp-handlebars', function() {
   describe('handlebarsPlugin()', function() {
+
+    it('should throw on invalid input type', function() {
+      (function() {
+        handlebarsPlugin({
+          outputType: 'cow'
+        });
+      }).should.throw();
+    });
 
     it('should compile unwrapped bare templates', function(done) {
       var stream = handlebarsPlugin({
@@ -65,7 +74,8 @@ describe('gulp-handlebars', function() {
 
     it('should compile templates for AMD', function(done) {
       var stream = handlebarsPlugin({
-        outputType: 'amd'
+        outputType: 'amd',
+        wrapped: true
       });
 
       var basicTemplate = getFixture('Basic.hbs');
@@ -82,7 +92,8 @@ describe('gulp-handlebars', function() {
 
     it('should compile templates for CommonJS', function(done) {
       var stream = handlebarsPlugin({
-        outputType: 'commonjs'
+        outputType: 'commonjs',
+        wrapped: true
       });
 
       var basicTemplate = getFixture('Basic.hbs');
@@ -99,7 +110,8 @@ describe('gulp-handlebars', function() {
 
     it('should compile templates for Node', function(done) {
       var stream = handlebarsPlugin({
-        outputType: 'node'
+        outputType: 'node',
+        wrapped: true
       });
 
       var basicTemplate = getFixture('Basic.hbs');
