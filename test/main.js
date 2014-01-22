@@ -30,6 +30,7 @@ describe('gulp-ember-handlebars', function () {
 
     it('should compile templates for the browser', function (done) {
       var stream = plugin({
+        namespace: 'NAMESPACE',
         outputType: 'browser',
         templateRoot: 'fixtures'
       });
@@ -85,7 +86,7 @@ describe('gulp-ember-handlebars', function () {
     it('should support custom processName functions', function (done) {
       var stream = plugin({
         outputType: 'browser',
-        namespace: false,
+        namespace: 'NAMESPACE',
         processName: function (name) {
           return 'x';
         }

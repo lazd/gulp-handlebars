@@ -44,12 +44,11 @@ This option specifies the name of the root directory for template files.
 
 ### options.namespace
 Type: `String`
-Default: `window`
+Default: `Ember.TEMPLATES`
 
 This option is only necessary when `options.outputType` is `browser`. This
-option's value the namespace to assign the pre-compiled templates. Use dot
-notation (e.g. `App.Templates`) for nested namespaces or false to declare
-templates in the global namespace.
+option's value is the namespace that is assigned the pre-compiled templates.
+Use dot notation (e.g. 'Ember.Templates`) for nested namespaces.
 
 ### options.processName
 Type: `Function`
