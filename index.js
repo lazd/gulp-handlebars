@@ -2,62 +2,63 @@
 
 var es = require('event-stream'),
     path = require('path'),
-    gutil = require('gulp-util'),
     compiler = require('ember-template-compiler');
 
 
-// Default name processing function should give the filename without extension
+// Default name function returns the filename without extension given the a file path string.
 var defaultProcessName = function (name) { return path.basename(name, path.extname(name)); };
 
 
 /**
- * @param {File} file Is the gulp.File
+ * @param {File} filePath Is the gulp.File instance's path string.
+ * @param {String} templateRoot Is the templates root directory name (i.e., "templates").
+ * @param {String} name Is the template name without any extensions.
+ * @returns {String} Returns the template module name used by the AMD wrapper.
+ */
+function buildModuleName(filePath, templateRoot, name) {
+  var pathParts = filePath.split(path.sep),
+      templatePartIndex = pathParts.lastIndexOf(templateRoot);
+  return pathParts.slice(templatePartIndex, - 1).join('/').concat('/', name);
+}
+
+
+/**
+ * @param {File} filePath Is the gulp.File instance's path string.
  * @param {String} templateRoot Is the templates directory name (i.e., "templates").
  * @param {String} name Is the template name without any extensions.
  * @param {String} compiled Is the pre-compiled Ember.Handlebars template text.
- * @param {String} namespace Is the name used in browser global assignment.
  *
- * @return {Object} Return a template context used by the wrapper functions.
+ * @returns {String} Returns a compiled Ember.Handlebars template text using an AMD-style module wrapper.
  */
-function ctx(file, templateRoot, name, compiled, namespace) {
-  var pathParts = file.path.split('/'),
-      templatePartIndex = pathParts.lastIndexOf(templateRoot),
-      moduleName = pathParts.slice(templatePartIndex, - 1).join('/').concat('/', name);
-
-  return {
-    compiled: compiled,
-    file: file, // Required by gutil.template().
-    moduleName: moduleName,
-    name: name,
-    namespace: namespace
-  };
+function toAMD(filePath, templateRoot, name, compiled) {
+  var moduleName = buildModuleName(filePath, templateRoot, name);
+  // 'define("<%= moduleName %>", function () { return Ember.TEMPLATES["<%= name %>"] = <%= compiled %> });'
+  return 'define("'.concat(moduleName, '", function () { return Ember.TEMPLATES["', name, '"] = ', compiled, ' });');
 }
 
 
 /**
- * @param {Object} ctx Is the wrapper template's context.
- * @return {String} Returns a compiled Ember.Handlebars template text using an AMD-style module wrapper.
+ * @param {String} namespace Is the name used in browser global assignment.
+ * @param {String} name Is the template name without any extensions.
+ * @param {String} compiled Is the pre-compiled Ember.Handlebars template text.
+ *
+ * @returns {String} Returns a compiled Ember.Handlebars template text for use directly in the browser.
  */
-function toAMD(ctx) {
-  return gutil.template('define("<%= moduleName %>", function () { return Ember.TEMPLATES["<%= name %>"] = <%= compiled %> });', ctx);
+function toBrowser(namespace, name, compiled) {
+  // '<%= namespace %>["<%= name %>"] = <%= compiled %>'
+  return namespace.concat('["', name, '"] = ', compiled);
 }
 
 
 /**
- * @param {Object} ctx Is the wrapper template's context.
- * @return {String} Returns a compiled Ember.Handlebars template text for use directly in the browser.
+ * @param {String} name Is the template name without any extensions.
+ * @param {String} compiled Is the pre-compiled Ember.Handlebars template text.
+ *
+ * @returns {String} Returns a compiled Ember.Handlebars template text using an CommonJS-style module wrapper.
  */
-function toBrowser(ctx) {
-  return gutil.template('<%= namespace %>["<%= name %>"] = <%= compiled %>', ctx);
-}
-
-
-/**
- * @param {Object} ctx Is the wrapper template's context.
- * @return {String} Returns a compiled Ember.Handlebars template text using an CommonJS-style module wrapper.
- */
-function toCommonJS(ctx) {
-  return gutil.template('module.exports = Ember.TEMPLATES["<%= name %>"] = <%= compiled %>', ctx);
+function toCommonJS(name, compiled) {
+  // 'module.exports = Ember.TEMPLATES["<%= name %>"] = <%= compiled %>'
+  return 'module.exports = Ember.TEMPLATES["'.concat(name, '"] = ', compiled);
 }
 
 
@@ -70,8 +71,6 @@ module.exports = function (options) {
       compileHandlebars;
 
   compileHandlebars = function (file, callback) {
-    var context;
-
     // Get the name of the template
     var name = processName(file.path);
 
@@ -81,24 +80,21 @@ module.exports = function (options) {
     // Surround the raw output as an Ember.Handlebars.template.
     compiled = 'Ember.Handlebars.template('.concat(compiled, ');');
 
-    // Build the template context.
-    context = ctx(file, templateRoot, name, compiled, namespace);
-
     switch (outputType) {
     case 'amd':
-      compiled = toAMD(context);
+      compiled = toAMD(file.path, templateRoot, name, compiled);
       break;
     case 'browser':
-      compiled = toBrowser(context);
+      compiled = toBrowser(namespace, name, compiled);
       break;
     case 'cjs':
-      compiled = toCommonJS(context);
+      compiled = toCommonJS(name, compiled);
       break;
     default:
       callback(new Error('Invalid output type: ' + outputType));
     }
 
-    file.path = path.join(path.dirname(file.path), name+'.js');
+    file.path = path.join(path.dirname(file.path), name + '.js');
     file.contents = new Buffer(compiled);
 
     callback(null, file);
