@@ -1,6 +1,6 @@
 {
   "name": "gulp-ember-handlebars",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Ember Handlebars plugin for gulp",
   "homepage": "http://github.com/fuseelements/gulp-ember-handlebars",
   "main": "index.js",
