@@ -1,6 +1,6 @@
 'use strict';
 
-var es = require('event-stream'),
+var stream = require('stream'),
     path = require('path'),
     compiler = require('ember-template-compiler');
 
@@ -68,9 +68,9 @@ module.exports = function (options) {
       templateRoot = options.templateRoot || 'templates',
       processName = options.processName || defaultProcessName,
       compilerOptions = options.compilerOptions || {},
-      compileHandlebars;
+      ts = new stream.Transform({objectMode: true});
 
-  compileHandlebars = function (file, callback) {
+  ts._transform = function (file, encoding, callback) {
     // Get the name of the template
     var name = processName(file.path);
 
@@ -97,8 +97,10 @@ module.exports = function (options) {
     file.path = path.join(path.dirname(file.path), name + '.js');
     file.contents = new Buffer(compiled);
 
-    callback(null, file);
+    this.push(file);
+
+    callback();
   };
 
-  return es.map(compileHandlebars);
+  return ts;
 };
