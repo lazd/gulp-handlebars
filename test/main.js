@@ -21,7 +21,7 @@ var getExpectedString = function(filePath) {
 };
 
 var fileMatchesExpected = function(file, fixtureFilename) {
-  path.basename(file.path).should.equal('Basic.js');  
+  path.basename(file.path).should.equal('Basic.js');
   String(file.contents).should.equal(getExpectedString(fixtureFilename));
 };
 
@@ -51,6 +51,31 @@ describe('gulp-handlebars', function() {
         done();
       });
       stream.write(basicTemplate);
+      stream.end();
+    });
+
+    it('should compile multiple unwrapped bare templates', function(done) {
+      var stream = handlebarsPlugin({
+        outputType: 'bare',
+        wrapped: false
+      });
+
+      var basicTemplate = getFixture('Basic.hbs');
+      var basicTemplate2 = getFixture('Basic.hbs');
+
+      var count = 0;
+      stream.on('data', function(newFile) {
+        should.exist(newFile);
+        should.exist(newFile.contents);
+        fileMatchesExpected(newFile, 'Basic_bare_unwrapped.js');
+
+        count++;
+        if (count === 2) {
+          done();
+        }
+      });
+      stream.write(basicTemplate);
+      stream.write(basicTemplate2);
       stream.end();
     });
 
