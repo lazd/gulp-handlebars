@@ -5,35 +5,23 @@ var stream = require('stream'),
     compiler = require('ember-template-compiler');
 
 
-// Default name function returns the filename without extension given the a file path string.
-var defaultProcessName = function (name) { return path.basename(name, path.extname(name)); };
+// Default name function returns the template filename without extension.
+var defaultProcessName = function (name) {
+  var n = path.extname(name).length;
+  return n === 0 ? name : name.slice(0, -n);
+};
 
 
 /**
- * @param {File} filePath Is the gulp.File instance's path string.
- * @param {String} templateRoot Is the templates root directory name (i.e., "templates").
- * @param {String} name Is the template name without any extensions.
- * @returns {String} Returns the template module name used by the AMD wrapper.
- */
-function buildModuleName(filePath, templateRoot, name) {
-  var pathParts = filePath.split(path.sep),
-      templatePartIndex = pathParts.lastIndexOf(templateRoot);
-  return pathParts.slice(templatePartIndex, - 1).join('/').concat('/', name);
-}
-
-
-/**
- * @param {File} filePath Is the gulp.File instance's path string.
  * @param {String} templateRoot Is the templates directory name (i.e., "templates").
  * @param {String} name Is the template name without any extensions.
  * @param {String} compiled Is the pre-compiled Ember.Handlebars template text.
  *
  * @returns {String} Returns a compiled Ember.Handlebars template text using an AMD-style module wrapper.
  */
-function toAMD(filePath, templateRoot, name, compiled) {
-  var moduleName = buildModuleName(filePath, templateRoot, name);
+function toAMD(templateRoot, name, compiled) {
   // 'define("<%= moduleName %>", function () { return Ember.TEMPLATES["<%= name %>"] = <%= compiled %> });'
-  return 'define("'.concat(moduleName, '", function () { return Ember.TEMPLATES["', name, '"] = ', compiled, ' });');
+  return 'define("'.concat(templateRoot, '/', name, '", function () { return Ember.TEMPLATES["', name, '"] = ', compiled, ' });');
 }
 
 
@@ -72,7 +60,7 @@ module.exports = function (options) {
 
   ts._transform = function (file, encoding, callback) {
     // Get the name of the template
-    var name = processName(file.path);
+    var name = processName(file.relative);
 
     // Perform pre-compilation
     var compiled = compiler.precompile(file.contents.toString(), compilerOptions);
@@ -82,7 +70,7 @@ module.exports = function (options) {
 
     switch (outputType) {
     case 'amd':
-      compiled = toAMD(file.path, templateRoot, name, compiled);
+      compiled = toAMD(templateRoot, name, compiled);
       break;
     case 'browser':
       compiled = toBrowser(namespace, name, compiled);
@@ -94,7 +82,7 @@ module.exports = function (options) {
       callback(new Error('Invalid output type: ' + outputType));
     }
 
-    file.path = path.join(path.dirname(file.path), name + '.js');
+    file.path = path.join(path.dirname(file.path), path.basename(name) + '.js');
     file.contents = new Buffer(compiled);
 
     this.push(file);

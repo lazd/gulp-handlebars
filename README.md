@@ -55,7 +55,7 @@ Use dot notation (e.g. 'Ember.Templates`) for nested namespaces.
 Type: `Function`
 Default: Strip file extension
 
-This option accepts a function which takes one argument (the template filepath)
+This option accepts a function which takes one argument (the template name)
 and returns a string which will be used as the key for the precompiled
 template object. By default, the filename minus the extension is used.
 
