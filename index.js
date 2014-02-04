@@ -60,7 +60,11 @@ module.exports = function (options) {
 
   ts._transform = function (file, encoding, callback) {
     // Get the name of the template
-    var name = processName(file.relative);
+    var name = file.relative;
+    // Look out for those pesky windows path separators
+    name = name.replace(/\\/g, '/');
+    // Allow the user a chance to transform the name
+    name = processName(name);
 
     // Perform pre-compilation
     var compiled = compiler.precompile(file.contents.toString(), compilerOptions);
