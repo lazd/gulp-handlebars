@@ -4,7 +4,7 @@
   "description": "Handlebars plugin for gulp",
   "main": "index.js",
   "dependencies": {
-    "vinyl-map": "0.0.1",
+    "vinyl-map": "0.1.0",
     "handlebars": "~1.1.2",
     "xtend": "~2.1.1",
     "gulp-rename": "~0.2.2",
