@@ -32,6 +32,6 @@
     "url": "https://github.com/lazd/gulp-handlebars/issues"
   },
   "engines": {
-    "node": ">=0.6"
+    "node": ">=0.9"
   }
 }
