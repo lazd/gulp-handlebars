@@ -36,6 +36,27 @@ describe('gulp-handlebars', function() {
       }).should.throw();
     });
 
+    it('should emit an error when compiling invalid templates', function(done) {
+      var stream = handlebarsPlugin({
+        outputType: 'bare',
+        wrapped: false
+      });
+
+      var invalidTemplate = getFixture('Invalid.hbs');
+      
+      stream.on('error', function(err) {
+        err.should.be.an.instanceOf(Error);
+        err.message.should.equal("Parse error on line 1:\n" +
+          "...syntax error: {{foo }}}\n"+
+          "-----------------------^\n" +
+          "Expecting 'CLOSE', got 'CLOSE_UNESCAPED'");
+        done();
+      });
+
+      stream.write(invalidTemplate);
+      stream.end();
+    });
+
     it('should compile unwrapped bare templates', function(done) {
       var stream = handlebarsPlugin({
         outputType: 'bare',
