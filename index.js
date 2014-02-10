@@ -59,8 +59,27 @@ module.exports = function (options) {
       ts = new stream.Transform({objectMode: true});
 
   ts._transform = function (file, encoding, callback) {
+    var name,
+        finish;
+
+    finish = function (stream) {
+      stream.push(file);
+      callback();
+    };
+
+    // Check possible guard cases.
+    if (file.isNull()) {
+      // Pass through unscathed.
+      finish(this);
+      return;
+    }
+    if (file.isStream()) {
+      callback(new Error('gulp-ember-handlebars: Streaming is not supported.'));
+      return;
+    }
+
     // Get the name of the template
-    var name = file.relative;
+    name = file.relative;
     // Look out for those pesky windows path separators
     name = name.replace(/\\/g, '/');
     // Allow the user a chance to transform the name
@@ -89,9 +108,7 @@ module.exports = function (options) {
     file.path = path.join(path.dirname(file.path), path.basename(name) + '.js');
     file.contents = new Buffer(compiled);
 
-    this.push(file);
-
-    callback();
+    finish(this);
   };
 
   return ts;
