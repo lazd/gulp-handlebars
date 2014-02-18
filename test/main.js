@@ -25,11 +25,6 @@ var fileMatchesExpected = function(file, fixtureFilename) {
   String(file.contents).should.equal(getExpectedString(fixtureFilename));
 };
 
-var fileMatchesExpectedPartial = function(file, fixtureFilename) {
-  path.basename(file.path).should.equal('_Partial.js');
-  String(file.contents).should.equal(getExpectedString(fixtureFilename));
-};
-
 describe('gulp-handlebars', function() {
   describe('handlebarsPlugin()', function() {
 
@@ -48,7 +43,7 @@ describe('gulp-handlebars', function() {
       });
 
       var invalidTemplate = getFixture('Invalid.hbs');
-
+      
       stream.on('error', function(err) {
         err.should.be.an.instanceOf(Error);
         err.message.should.equal("Parse error on line 1:\n" +
@@ -174,44 +169,6 @@ describe('gulp-handlebars', function() {
         done();
       });
       stream.write(basicTemplate);
-      stream.end();
-    });
-
-    it('should compile unwrapped bare partials', function(done) {
-      var stream = handlebarsPlugin({
-        partial: true,
-        outputType: 'bare',
-        wrapped: false
-      });
-
-      var partialTemplate = getFixture('_Partial.hbs');
-
-      stream.on('data', function(newFile) {
-        should.exist(newFile);
-        should.exist(newFile.contents);
-        fileMatchesExpectedPartial(newFile, '_Partial_bare_unwrapped.js');
-        done();
-      });
-      stream.write(partialTemplate);
-      stream.end();
-    });
-
-    it('should compile wrapped bare partials', function(done) {
-      var stream = handlebarsPlugin({
-        partial: true,
-        outputType: 'bare',
-        wrapped: true
-      });
-
-      var partialTemplate = getFixture('_Partial.hbs');
-
-      stream.on('data', function(newFile) {
-        should.exist(newFile);
-        should.exist(newFile.contents);
-        fileMatchesExpectedPartial(newFile, '_Partial_bare.js');
-        done();
-      });
-      stream.write(partialTemplate);
       stream.end();
     });
 

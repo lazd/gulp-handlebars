@@ -10,7 +10,6 @@ module.exports = function(options) {
   options = extend({
     compilerOptions: {},
     wrapped: false,
-    partial: false,
     outputType: 'bare' // amd, commonjs, node, bare
   }, options);
 
@@ -25,14 +24,6 @@ module.exports = function(options) {
 
     if (options.wrapped) {
       compiled = 'Handlebars.template('+compiled+')';
-    }
-    if (options.partial) {
-      var nodePath = require('path');
-      var partialName = nodePath.basename(path, '.hbs');
-      if (partialName.charAt(0) === '_') {
-        partialName = partialName.substr(1);
-      }
-      compiled = 'Handlebars.registerPartial('+JSON.stringify(partialName)+', '+compiled+');';
     }
 
     // Handle different output times
