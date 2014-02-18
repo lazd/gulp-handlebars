@@ -25,7 +25,7 @@ gulp.task('templates', function(){
 
 ## Compiling to a namespace for the browser
 
-[gulp-declare] can be used to compile templates for the browser. Just pipe the output of gulp-handlebars to gulp-declare:
+`[gulp-declare]` can be used to compile templates for the browser. Just pipe the output of gulp-handlebars to gulp-declare:
 
 ```javascript
 var handlebars = require('gulp-handlebars');
@@ -44,7 +44,7 @@ gulp.task('templates', function(){
 
 ## Compiling to a partial for the browser
 
-[gulp-wrap] can be used to compile templates for the browser. Just pipe the output of gulp-handlebars to gulp-declare:
+`[gulp-wrap]` can be used to compile templates for the browser. Just pipe the output of gulp-handlebars to gulp-declare:
 
 ```javascript
 var handlebars = require('gulp-handlebars');
