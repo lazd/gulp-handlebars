@@ -196,6 +196,28 @@ describe('gulp-handlebars', function() {
       stream.end();
     });
 
+    it('should compile unwrapped bare partials with processPartialName', function(done) {
+      var stream = handlebarsPlugin({
+        partial: true,
+        outputType: 'bare',
+        wrapped: false,
+        processPartialName: function(partialName) {
+          return partialName.substr(1).toLowerCase();
+        }
+      });
+
+      var partialTemplate = getFixture('_Partial.hbs');
+
+      stream.on('data', function(newFile) {
+        should.exist(newFile);
+        should.exist(newFile.contents);
+        fileMatchesExpectedPartial(newFile, '_Partial_bare_unwrapped_lowercase.js');
+        done();
+      });
+      stream.write(partialTemplate);
+      stream.end();
+    });
+
     it('should compile wrapped bare partials', function(done) {
       var stream = handlebarsPlugin({
         partial: true,
