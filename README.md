@@ -25,7 +25,7 @@ gulp.task('templates', function(){
 
 ## Compiling to a namespace for the browser
 
-[gulp-declare] can be used to compile templates for the browser. Just pipe the output of gulp-handlebars to gulp-declare:
+[gulp-declare] can be used to compile templates for the browser. Just pipe the output of `gulp-handlebars` to `gulp-declare`:
 
 ```javascript
 var handlebars = require('gulp-handlebars');
@@ -42,6 +42,33 @@ gulp.task('templates', function(){
 });
 ```
 
+## Compiling to a partial
+
+[gulp-wrap] can be used to declare partials. Just pipe the output of `gulp-handlebars` to `gulp-wrap`:
+
+```javascript
+var handlebars = require('gulp-handlebars');
+var wrap = require('gulp-wrap');
+var path = require('path');
+
+gulp.task('templates', function() {
+  // glob is match all partials that begin with an underscore
+  // To match all nonpartials would be 'test/fixtures/**/[^_]*.hbs'
+  gulp.src(['client/templates/_*.hbs'])
+    .pipe(handlebars())
+    .pipe(wrap('Handlebars.registerPartial(<%= processPartialName(file.relative) %>, Handlebars.template(<%= contents %>))', {}, {
+      imports: {
+        processPartialName: function(fileName) {
+          // This names the partial without the first character, the underscore
+          return JSON.stringify(
+            path.basename(fileName, '.js').substr(1)
+          );
+        }
+      }
+    }))
+    .pipe(gulp.dest('build/js/'));
+});
+```
 
 ## API
 
@@ -76,3 +103,4 @@ Compiler options to pass to `Handlebars.precompile()`.
 [npm-image]: https://badge.fury.io/js/gulp-handlebars.png
 
 [gulp-declare]: https://github.com/lazd/gulp-declare
+[gulp-wrap]: https://github.com/adamayres/gulp-wrap
