@@ -30,6 +30,7 @@ gulp.task('templates', function(){
 ```javascript
 var handlebars = require('gulp-handlebars');
 var declare = require('gulp-declare');
+var concat = require('gulp-concat');
 
 gulp.task('templates', function(){
   gulp.src(['client/templates/*.hbs'])
