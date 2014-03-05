@@ -143,5 +143,20 @@ describe('gulp-ember-handlebars', function () {
       stream.end();
     });
 
+    it('should trigger error handler on malformed template', function (done) {
+      var stream = plugin({
+        outputType: 'browser',
+        namespace: 'NAMESPACE'
+      });
+
+      var malformedTemplate = getFixture('Malformed.hbs');
+
+      stream.on('error', function (error) {
+        done();
+      });
+      stream.write(malformedTemplate);
+      stream.end();
+    });
+
   });
 });

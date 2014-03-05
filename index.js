@@ -86,7 +86,12 @@ module.exports = function (options) {
     name = processName(name);
 
     // Perform pre-compilation
-    var compiled = compiler.precompile(file.contents.toString(), compilerOptions);
+    try {
+      var compiled = compiler.precompile(file.contents.toString(), compilerOptions);
+    } catch (e) {
+      callback(new Error(e));
+      return;
+    }
 
     // Surround the raw output as an Ember.Handlebars.template.
     compiled = 'Ember.Handlebars.template('.concat(compiled, ');');
