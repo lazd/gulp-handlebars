@@ -1,57 +1,31 @@
-var map = require('vinyl-map');
-var es = require('event-stream');
-var rename = require('gulp-rename');
-var Handlebars = require('handlebars');
-var extend = require('xtend');
+'use strict';
 
-var outputTypes = ['amd', 'commonjs', 'node', 'bare'];
+var through = require('through');
+var path = require('path');
+var gutil = require('gulp-util');
+var Handlebars = require('handlebars');
 
 module.exports = function(options) {
-  options = extend({
-    compilerOptions: {},
-    wrapped: false,
-    outputType: 'bare' // amd, commonjs, node, bare
-  }, options);
-
-  if (outputTypes.indexOf(options.outputType) === -1) {
-    throw new Error('Invalid output type: '+options.outputType);
-  }
-
-  var compileHandlebars = function(contents, path) {
-    // Perform pre-compilation
-    // This will throw if errors are encountered
-    var compiled = Handlebars.precompile(contents.toString(), options.compilerOptions);
-
-    if (options.wrapped) {
-      compiled = 'Handlebars.template('+compiled+')';
+  var opts = options || {};
+  var compilerOptions = opts.compilerOptions || {};
+  return through(function(file) {
+    if (file.isNull()) { return this.queue(file); } // pass along
+    if (file.isStream()) { return this.emit('error', new gutil.PluginError('gulp-handlebars', 'Streaming not supported')); }
+    var contents = file.contents.toString();
+    var compiled = null;
+    try { compiled = Handlebars.precompile(contents, compilerOptions).toString(); }
+    catch (err) { this.emit('error', err); }
+    if (compiled) {
+      file.contents = new Buffer(compiled);
+      file.path = gutil.replaceExtension(file.path, '.js');
+      file.defineModuleOptions = {
+        require: { Handlebars: 'handlebars' },
+        context: {
+          handlebars: 'Handlebars.template(<%= contents %>)'
+        },
+        wrapper: '<%= handlebars %>'
+      };
+      this.queue(file);
     }
-
-    // Handle different output times
-    if (options.outputType === 'amd') {
-      compiled = "define(['handlebars'], function(Handlebars) {return "+compiled+";});";
-    }
-    else if (options.outputType === 'commonjs') {
-      compiled = "module.exports = function(Handlebars) {return "+compiled+";};";
-    }
-    else if (options.outputType === 'node') {
-      compiled = "module.exports = "+compiled+";";
-
-      if (options.wrapped) {
-        // Only require Handlebars if wrapped
-        compiled = "var Handlebars = global.Handlebars || require('handlebars');"+compiled;
-      }
-    }
-
-    return compiled;
-  };
-
-  var doRename = function(dir, base, ext) {
-    // Change the extension to .js
-    return base+'.js';
-  };
-
-  return es.pipeline(
-    map(compileHandlebars),
-    rename(doRename)
-  );
+  });
 };
