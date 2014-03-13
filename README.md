@@ -109,7 +109,8 @@ See the [`gulp-define-module` documentation][gulp-define-module documentation] f
  - `<%= handlebars %>` - The Handlebars template, wrapped in a call to `Handlebars.template()`
  - `<%= contents %>` - The bare Handlebars template (not wrapped).
 
-`gulp-handlebars` also sets a default [`require`](https://github.com/wbyoung/gulp-define-module#optionsrequire) of `{ Handlebars: 'handlebars' }` for [`gulp-define-module`][gulp-define-module], so Handlebars will be present in the resulting module.
+`gulp-handlebars` also sets a default [`require`](https://github.com/wbyoung/gulp-define-module#optionsrequire) of `{ Handlebars: 'handlebars' }` for [`gulp-define-module`][gulp-define-module] so Handlebars will be present in when defining AMD, Node, CommonJS, or hybrid modules.
+
 
 ## API
 
