@@ -10,7 +10,8 @@
   },
   "devDependencies": {
     "should": "~2.1.1",
-    "mocha": "~1.15.1"
+    "mocha": "~1.15.1",
+    "gulp-define-module": "0.0.2"
   },
   "scripts": {
     "test": "./node_modules/.bin/mocha"
@@ -24,6 +25,9 @@
     "handlebars"
   ],
   "author": "Larry Davis <lazdnet@gmail.com>",
+  "contributors": [
+    "Whitney Young <wbyoung@fadingred.com>"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/lazd/gulp-handlebars/issues"

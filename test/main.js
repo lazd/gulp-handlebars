@@ -1,4 +1,5 @@
 var handlebarsPlugin = require('../');
+var defineModule = require('gulp-define-module');
 var should = require('should');
 var gutil = require('gulp-util');
 var fs = require('fs');
@@ -19,8 +20,8 @@ var getExpectedString = function(filePath) {
   return fs.readFileSync(path.join('test', 'expected', filePath), 'utf8');
 };
 
-var fileMatchesExpected = function(file, fixtureFilename) {
-  path.basename(file.path).should.equal('Basic.js');
+var fileMatchesExpected = function(file, fixtureFilename, expectedFilename) {
+  path.basename(file.path).should.equal(expectedFilename);
   String(file.contents).should.equal(getExpectedString(fixtureFilename));
 };
 
@@ -33,10 +34,7 @@ describe('gulp-handlebars', function() {
 
       stream.on('error', function(err) {
         err.should.be.an.instanceOf(Error);
-        err.message.should.equal("Parse error on line 1:\n" +
-          "...syntax error: {{foo }}}\n"+
-          "-----------------------^\n" +
-          "Expecting 'CLOSE', got 'CLOSE_UNESCAPED'");
+        err.message.should.equal(getExpectedString('Error.txt'));
         done();
       });
 
@@ -51,7 +49,7 @@ describe('gulp-handlebars', function() {
       stream.on('data', function(newFile) {
         should.exist(newFile);
         should.exist(newFile.contents);
-        fileMatchesExpected(newFile, 'Basic.js');
+        fileMatchesExpected(newFile, 'Basic.js', 'Basic.js');
         done();
       });
       stream.write(basicTemplate);
@@ -67,7 +65,7 @@ describe('gulp-handlebars', function() {
       stream.on('data', function(newFile) {
         should.exist(newFile);
         should.exist(newFile.contents);
-        fileMatchesExpected(newFile, 'Basic.js');
+        fileMatchesExpected(newFile, 'Basic.js', 'Basic.js');
 
         count++;
         if (count === 2) {
@@ -77,6 +75,21 @@ describe('gulp-handlebars', function() {
       stream.write(basicTemplate);
       stream.write(basicTemplate2);
       stream.end();
+    });
+
+    it('should pass require and wrapper options to gulp-define-module', function(done) {
+      var hbsStream = handlebarsPlugin();
+      var defineStream = hbsStream.pipe(defineModule('node'));
+      var basicTemplate = getFixture('Basic.hbs');
+
+      hbsStream.on('data', function(newFile) {
+        should.exist(newFile);
+        should.exist(newFile.contents);
+        fileMatchesExpected(newFile, 'Basic_node.js', 'Basic.js');
+        done();
+      });
+      hbsStream.write(basicTemplate);
+      hbsStream.end();
     });
   });
 });
