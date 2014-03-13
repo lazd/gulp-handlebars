@@ -91,5 +91,23 @@ describe('gulp-handlebars', function() {
       hbsStream.write(basicTemplate);
       hbsStream.end();
     });
+
+    it('should give filename without extension to gulp-define-module', function(done) {
+      var hbsStream = handlebarsPlugin();
+      var defineStream = hbsStream.pipe(defineModule('plain', {
+        // Assumes MyApp.Templates is already declared
+        wrapper: 'MyApp.templates["<%= name %>"] = <%= handlebars %>'
+      }));
+      var basicTemplate = getFixture('Basic.hbs');
+
+      hbsStream.on('data', function(newFile) {
+        should.exist(newFile);
+        should.exist(newFile.contents);
+        fileMatchesExpected(newFile, 'Basic_namespace.js', 'Basic.js');
+        done();
+      });
+      hbsStream.write(basicTemplate);
+      hbsStream.end();
+    });
   });
 });
