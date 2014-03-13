@@ -9,47 +9,35 @@ First, install `gulp-handlebars` and [`gulp-define-module`][gulp-define-module] 
 npm install --save-dev gulp-handlebars gulp-define-module
 ```
 
-Then, add it to your `gulpfile.js`:
+## Template modules for Node.js
 
-```javascript
+This example will make templates available for loading via [Node's require](http://nodejs.org/api/globals.html#globals_require):
+
+```js
 var handlebars = require('gulp-handlebars');
 var defineModule = require('gulp-define-module');
 
 gulp.task('templates', function(){
-  gulp.src(['client/templates/*.hbs'])
+  gulp.src(['templates/*.hbs'])
     .pipe(handlebars())
     .pipe(defineModule('node'))
     .pipe(gulp.dest('build/templates/'));
 });
 ```
 
-gulp-handlebars outputs a raw handlebars function, so it is likely that you will want to use [gulp-define-module] to make the handlebars template available via a specific namespace or for use with a module system. The example above makes this template available for loading via [node's require](http://nodejs.org/api/globals.html#globals_require).
+Templates can then be used within Node as such:
 
-## Compiling to a namespace for the browser
-
-[gulp-define-module] can also be used to make the template accessible via a namespace:
-
-```javascript
-var handlebars = require('gulp-handlebars');
-var defineModule = require('gulp-define-module');
-var concat = require('gulp-concat');
-
-gulp.task('templates', function(){
-  gulp.src(['client/templates/*.hbs'])
-    .pipe(handlebars())
-    .pipe(defineModule('plain', {
-      wrapper: 'MyApp.templates['<%= name %>'] = <%= handlebars %>'
-    }))
-    .pipe(concat('templates.js'))
-    .pipe(gulp.dest('build/js/'));
-});
+```js
+var appTemplate = require('./build/templates/App.Header.js');
+var html = appTemplate(data);
 ```
 
-The above example assumes that MyApp.templates will be defined before the `templates.js` script is included for use in the browser, and will make a file such as `example.hbs` available via `MyApp.templates.example`. See the [gulp-define-module] documentation for more details.
+## Namespaced templates for the browser
 
-[gulp-declare] is another option that can be used to compile templates for the browser.
+[`gulp-declare`][gulp-declare] can be used to safely declare template namespaces and make templates available for use in the browser:
 
-```javascript
+
+```js
 var handlebars = require('gulp-handlebars');
 var defineModule = require('gulp-define-module');
 var declare = require('gulp-declare');
@@ -67,27 +55,61 @@ gulp.task('templates', function(){
 });
 ```
 
-This will result in a more robust building of the namespace. For a file, `App.Header.hbs`, the result would be:
+The templates path within the namespace is the base namespace combined with the template's filename. For a template named `App.Header.hbs` with a namespace of `MyApp.Templates`, the compiled template would be available as `MyApp.Templates.App.Header`.
 
-```javascript
+The resulting `templates.js` would look like:
+
+```js
 this["MyApp"] = this["MyApp"] || {};
 this["MyApp"]["templates"] = this["MyApp"]["templates"] || {};
 this["MyApp"]["templates"]["App"] = this["MyApp"]["templates"]["App"] || {};
-this["MyApp"]["templates"]["App"]["Header"] = Handlebars.template(function() { /* compiled handlebars template function */});
+this["MyApp"]["templates"]["App"]["Header"] = Handlebars.template(function() { /* compiled template function */ });
 ```
 
-The use of [gulp-define-module] was still needed in this example to get the `Handlebars.template` wrapper.
+[`gulp-define-module`][gulp-define-module] can also be used to assign templates as properties of an already declared namespace:
+
+```js
+var handlebars = require('gulp-handlebars');
+var defineModule = require('gulp-define-module');
+var concat = require('gulp-concat');
+
+gulp.task('templates', function(){
+  gulp.src(['client/templates/*.hbs'])
+    .pipe(handlebars())
+    .pipe(defineModule('plain', {
+      // Assumes MyApp.Templates is already declared
+      wrapper: 'MyApp.templates["<%= name %>"] = <%= handlebars %>'
+    }))
+    .pipe(concat('templates.js'))
+    .pipe(gulp.dest('build/js/'));
+});
+```
+
+For a template named `App.Header.hbs`, the resulting `templates.js` would look like:
+
+```js
+MyApp.templates["App.Header"] = Handlebars.template(function() { /* compiled template function */ };
+```
+
+The [`gulp-define-module`][gulp-define-module] method above assumes the following:
+
+ - `MyApp.templates` will be defined before the `templates.js` script is included for use in the browser
+ - Templates with dots in their names will be assigned as `MyApp.Templates["App.Header"]`, not `MyApp.Templates.App.Header`
+ - The template name does not contain double quotes
+
+See the [`gulp-define-module` documentation][gulp-define-module documentation] for more details.
 
 
 ## Compiling to various module systems
 
-[gulp-define-module] can be used to prepare the output for use with common module systems such as AMD, Node, and CommonJS. Please see the documentation for more details on how to use that in a gulp chain.
+See the [`gulp-define-module` documentation][gulp-define-module documentation] for details on how to define templates as AMD, Node, CommonJS, and hybrid modules.
 
-gulp-handlebars makes the following available for use in the [define-module wrapper](https://github.com/wbyoung/gulp-define-module#optionswrapper):
+`gulp-handlebars` makes the following available for use in `gulp-define-module`'s [`wrapper` template option](https://github.com/wbyoung/gulp-define-module#optionswrapper):
 
- - `handlebars`: The handlebars template fully wrapped (`Handlebars.template(<%= contents %>)`).
+ - `<%= handlebars %>` - The Handlebars template, wrapped in a call to `Handlebars.template()`
+ - `<%= contents %>` - The bare Handlebars template (not wrapped).
 
-gulp-handlebars also sets a default [`require`](https://github.com/wbyoung/gulp-define-module#optionsrequire) of `{ Handlebars: 'handlebars' }` for [gulp-define-module].
+`gulp-handlebars` also sets a default [`require`](https://github.com/wbyoung/gulp-define-module#optionsrequire) of `{ Handlebars: 'handlebars' }` for [`gulp-define-module`][gulp-define-module], so Handlebars will be present in the resulting module.
 
 ## API
 
@@ -104,6 +126,7 @@ Compiler options to pass to `Handlebars.precompile()`.
 [npm-url]: https://npmjs.org/package/gulp-handlebars
 [npm-image]: https://badge.fury.io/js/gulp-handlebars.png
 
+[gulp-define-module documentation]: https://github.com/wbyoung/gulp-define-module#definemoduletype-options
 [gulp-define-module]: https://github.com/wbyoung/gulp-define-module
 [gulp-handlebars]: https://github.com/lazd/gulp-handlebars
 [gulp-declare]: https://github.com/lazd/gulp-declare
