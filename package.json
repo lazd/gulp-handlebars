@@ -1,17 +1,14 @@
 {
   "name": "gulp-handlebars",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "Handlebars plugin for gulp",
   "main": "index.js",
   "dependencies": {
-    "vinyl-map": "0.1.0",
+    "through": "~2.3.0",
     "handlebars": "~1.1.2",
-    "xtend": "~2.1.1",
-    "gulp-rename": "~0.2.2",
-    "event-stream": "~3.1.0"
+    "gulp-util": "~2.2.0"
   },
   "devDependencies": {
-    "gulp-util": "~2.2.12",
     "should": "~2.1.1",
     "mocha": "~1.15.1"
   },
