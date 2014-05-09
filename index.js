@@ -5,9 +5,10 @@ var path = require('path');
 var gutil = require('gulp-util');
 var Handlebars = require('handlebars');
 var _ = require('underscore');
+var crypto = require('crypto');
 
-var generateUniqueId = function() {
-  return '_' + (new Date()).getTime();
+var generateUniqueId = function(s) {
+  return '_' + crypto.createHash('md5').update(s).digest('hex');
 };
 
 module.exports = function(options) {
