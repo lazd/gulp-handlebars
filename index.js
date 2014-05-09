@@ -33,7 +33,7 @@ module.exports = function(options) {
     var partialId = null;
     var partialsDepsMap = {};
     var partialsPrefix = opts.partialsPrefix || '_';
-    var isPartialFile = path.basename(file.relative)[0] === partialsPrefix;
+    var isPartial = path.basename(file.relative)[0] === partialsPrefix;
 
     if (opts.parsePartials) {
       try {
@@ -59,7 +59,7 @@ module.exports = function(options) {
     }
 
     // store the partial data into registry
-    if (isPartialFile) {
+    if (isPartial) {
       // extract the partial path
       var partialPath = path.join(path.resolve(path.dirname(file.relative)), path.basename(file.relative, '.hbs'));
       // extract the existing unique partial ID by path or generate the new one
@@ -80,8 +80,12 @@ module.exports = function(options) {
 
     file.defineModuleOptions = _.defaults({
       require: _.extend({ Handlebars: 'handlebars' }, defineModuleOptions.require, partialsDepsMap),
-      context: _.extend({ partialName: partialId, templateWrapper: templateWrapper }, defineModuleOptions.context),
-      wrapper: isPartialFile ? partialWrapper : templateWrapper
+      context: _.extend({
+        isPartial: isPartial,
+        partialName: partialId,
+        templateWrapper: templateWrapper
+      }, defineModuleOptions.context),
+      wrapper: isPartial ? partialWrapper : templateWrapper
     }, defineModuleOptions);
 
     this.queue(file);
