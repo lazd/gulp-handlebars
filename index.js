@@ -1,30 +1,38 @@
-'use strict';
-
-var through = require('through');
-var path = require('path');
+var through2 = require('through2');
 var gutil = require('gulp-util');
-var Handlebars = require('handlebars');
 
-module.exports = function(options) {
-  var opts = options || {};
+const PLUGIN_NAME = 'gulp-handlebars';
+
+module.exports = function(opts) {
+  'use strict';
+
+  opts = opts || {};
   var compilerOptions = opts.compilerOptions || {};
+  var handlebars = opts.handlebars || require('handlebars');
 
-  return through(function(file) {
+  return through2.obj(function(file, enc, callback) {
     if (file.isNull()) {
-      return this.queue(file);
+      return callback(null, file);
     }
 
     if (file.isStream()) {
-      return this.emit('error', new gutil.PluginError('gulp-handlebars', 'Streaming not supported'));
+      this.emit('error', new gutil.PluginError(PLUGIN_NAME, 'Streaming not supported'));
+      return callback();
     }
 
     var contents = file.contents.toString();
     var compiled = null;
     try {
-      compiled = Handlebars.precompile(contents, compilerOptions).toString();
+      var ast = handlebars.parse(contents);
+      // allow to preprocess ast before compiling
+      if (opts.processAST) {
+        ast = opts.processAST(ast) || ast; // processAST may return new ast or change it in place
+      }
+      compiled = handlebars.precompile(ast, compilerOptions).toString();
     }
     catch (err) {
-      return this.emit('error', err);
+      this.emit('error', new gutil.PluginError(PLUGIN_NAME, err));
+      return callback();
     }
 
     file.contents = new Buffer(compiled);
@@ -41,6 +49,7 @@ module.exports = function(options) {
       wrapper: '<%= handlebars %>'
     };
 
-    this.queue(file);
+    this.push(file);
+    callback();
   });
 };

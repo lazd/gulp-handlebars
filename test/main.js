@@ -56,6 +56,24 @@ describe('gulp-handlebars', function() {
       stream.end();
     });
 
+    it('should process ast', function(done) {
+      var stream = handlebarsPlugin({
+          processAST: function(ast) {
+              ast.statements[0].string = 'Preprocessed template';
+          }
+      });
+      var basicTemplate = getFixture('Basic.hbs');
+
+      stream.on('data', function(newFile) {
+        should.exist(newFile);
+        should.exist(newFile.contents);
+        fileMatchesExpected(newFile, 'Basic_preprocessed.js', 'Basic.js');
+        done();
+      });
+      stream.write(basicTemplate);
+      stream.end();
+    });
+
     it('should compile multiple templates', function(done) {
       var stream = handlebarsPlugin();
       var basicTemplate = getFixture('Basic.hbs');

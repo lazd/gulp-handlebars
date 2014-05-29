@@ -121,6 +121,17 @@ Type: `Object`
 
 Compiler options to pass to `Handlebars.precompile()`.
 
+### options.processAST
+Type: `Function`
+
+Function what called for each template's ast for preprocessing.
+
+### options.handlebars
+Type: `Object`
+
+Handlebars library to be used instead of embedded in this plugin.
+
+
 
 [travis-url]: http://travis-ci.org/lazd/gulp-handlebars
 [travis-image]: https://secure.travis-ci.org/lazd/gulp-handlebars.png?branch=master
