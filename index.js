@@ -49,7 +49,6 @@ module.exports = function(opts) {
       wrapper: '<%= handlebars %>'
     };
 
-    this.push(file);
-    callback();
+    callback(null, file);
   });
 };
