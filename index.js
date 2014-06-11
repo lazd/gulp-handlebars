@@ -45,7 +45,7 @@ module.exports = function(options) {
             // extract the existing unique partial ID by path or generate the new one
             partialId = partialsRegistry[partialPath] || generateUniqueId(partialPath);
             // replace the partials occurrences to the unique partial ID
-            contents = contents.replace(new RegExp('>' + partialName, 'g'), '>' + partialId);
+            contents = contents.replace(new RegExp('>[\\s]+' + partialName, 'g'), '> ' + partialId);
             // add partial to the dependencies map, make relative if simple name
             partialsDepsMap[partialId] = partialName.match(/\.+\/+/gi) ? partialName : './' + partialName;
             // store the partial path to id relation
