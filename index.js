@@ -4,7 +4,7 @@ var through = require('through');
 var path = require('path');
 var gutil = require('gulp-util');
 var Handlebars = require('handlebars');
-var _ = require('underscore');
+var _ = require('lodash');
 var crypto = require('crypto');
 
 var generateUniqueId = function(s) {
