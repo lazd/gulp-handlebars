@@ -36,22 +36,31 @@ module.exports = function(options) {
     var isPartial = path.basename(file.relative)[0] === partialsPrefix;
 
     if (opts.parsePartials) {
-      try {
-        _.each(Handlebars.parse(contents).statements, function(node) {
-          if (node.type === 'partial') {
-            var partialName = node.partialName.name;
-            // extract the partial path relative to the target template
-            var partialPath = path.join(path.resolve(path.dirname(file.relative), path.dirname(partialName)), path.basename(partialName));
-            // extract the existing unique partial ID by path or generate the new one
-            partialId = partialsRegistry[partialPath] || generateUniqueId(partialPath);
-            // replace the partials occurrences to the unique partial ID
-            contents = contents.replace(new RegExp('>[\\s]+' + partialName, 'g'), '> ' + partialId);
-            // add partial to the dependencies map, make relative if simple name
-            partialsDepsMap[partialId] = partialName.match(/\.+\/+/gi) ? partialName : './' + partialName;
-            // store the partial path to id relation
-            partialsRegistry[partialPath] = partialId;
+      var parseNodes = function(nodes) {
+        _.each(nodes, function(node) {
+          if (_.isObject(node) || _.isArray(node)) {
+            if (node.type === 'partial') {
+              var partialName = node.partialName.name;
+              // console.log(node.partialName.name);
+              // extract the partial path relative to the target template
+              var partialPath = path.join(path.resolve(path.dirname(file.relative), path.dirname(partialName)), path.basename(partialName));
+              // extract the existing unique partial ID by path or generate the new one
+              partialId = partialsRegistry[partialPath] || generateUniqueId(partialPath);
+              // replace the partials occurrences to the unique partial ID
+              contents = contents.replace(new RegExp('>[\\s]*' + partialName, 'g'), '> ' + partialId);
+              // add partial to the dependencies map, make relative if simple name
+              partialsDepsMap[partialId] = partialName.match(/\.+\/+/gi) ? partialName : './' + partialName;
+              // store the partial path to id relation
+              partialsRegistry[partialPath] = partialId;
+            }
+
+            parseNodes(node);
           }
         });
+      };
+
+      try {
+        parseNodes(Handlebars.parse(contents));
       }
       catch (err) {
         return this.emit('error', err);
