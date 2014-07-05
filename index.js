@@ -15,7 +15,11 @@ module.exports = function(options) {
   var opts = options || {};
   var compilerOptions = opts.compilerOptions || {};
   var partialsRegistry = {};
-  var defineModuleOptions = opts.defineModuleOptions || {};
+  var defineModuleOptions = opts.defineModuleOptions || {
+    context: {
+      handlebars: 'Handlebars.template(<%= contents %>)'
+    }
+  };
   var templateWrapper = opts.templateWrapper || 'Handlebars.template(<%= contents %>)';
   var partialWrapper = opts.partialWrapper || 'Handlebars.registerPartial("<%= partialName %>", <%= templateWrapper %>)';
 
@@ -84,7 +88,7 @@ module.exports = function(options) {
       return this.emit('error', err);
     }
 
-    file.contents = new Buffer(compiled);
+    file.contents = new Buffer(compiled);    
     file.path = gutil.replaceExtension(file.path, '.js');
 
     file.defineModuleOptions = _.defaults({
