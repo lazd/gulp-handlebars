@@ -5,7 +5,16 @@ var gutil = require('gulp-util');
 var fs = require('fs');
 var path = require('path');
 var _ = require('lodash');
+var crypto = require('crypto');
 require('mocha');
+
+var generateUniqueId = function(s) {
+  return '_' + crypto.createHash('md5').update(s).digest('hex');
+};
+
+var getAbsolutePartialPath = function(partialFileName) {
+  return path.join(path.resolve(path.dirname(partialFileName)), path.basename(partialFileName, '.hbs'));
+};
 
 var getFixture = function(filePath) {
   filePath = path.join('test', 'fixtures', filePath);
@@ -159,7 +168,9 @@ describe('gulp-handlebars', function() {
       var hbsStream = handlebarsPlugin({ parsePartials: true });
       var basicTemplateWithNestedPartial = getFixture('Basic_with_nested_partial.hbs');
       var basicPartialWithNestedPartial = getFixture('_basic_partial_with_nested.hbs');
+      var basicPartialWithNestedPartialUID = generateUniqueId(getAbsolutePartialPath('_basic_partial_with_nested.hbs'));
       var basicNestedPartial = getFixture('_basic_nested_partial.hbs');
+      var basicNestedPartialUID = generateUniqueId(getAbsolutePartialPath('_basic_nested_partial.hbs'));
       hbsStream.pipe(defineModule('amd'));
 
       hbsStream.on('data', function(newFile) {
@@ -169,19 +180,32 @@ describe('gulp-handlebars', function() {
 
         switch (path.basename(newFile.path)) {
           case 'Basic_with_nested_partial.js':
+            // actualize partial uid
+            newFile.contents = new Buffer(newFile.contents.toString().replace(new RegExp(basicPartialWithNestedPartialUID, 'g'), '_basic_partial_with_nested'));
+
             fileMatchesExpected(newFile, 'Basic_with_nested_partial.js', 'Basic_with_nested_partial.js');
+
             // first nested partial found and registered
-            should.deepEqual(_(newFile.partialsRegistry).values().value(), ['_94e8ceec2cb635d72df145bf24fea501']);
+            should.deepEqual(_(newFile.partialsRegistry).values().value(), [basicPartialWithNestedPartialUID]);
             break;
           case '_basic_partial_with_nested.js':
+            // actualize partials uids
+            newFile.contents = new Buffer(newFile.contents.toString().replace(new RegExp(basicPartialWithNestedPartialUID, 'g'), '_basic_partial_with_nested'));
+            newFile.contents = new Buffer(newFile.contents.toString().replace(new RegExp(basicNestedPartialUID, 'g'), '_basic_nested_partial'));
+
             fileMatchesExpected(newFile, '_basic_partial_with_nested.js', '_basic_partial_with_nested.js');
+
             // two nested partials found and registered
-            should.deepEqual(_(newFile.partialsRegistry).values().value(), ['_94e8ceec2cb635d72df145bf24fea501', '_e390b316994ff22619f015b3cce7b2fa']);
+            should.deepEqual(_(newFile.partialsRegistry).values().value(), [basicPartialWithNestedPartialUID, basicNestedPartialUID]);
             break;
           case '_basic_nested_partial.js':
+            // actualize partials uids
+            newFile.contents = new Buffer(newFile.contents.toString().replace(new RegExp(basicNestedPartialUID, 'g'), '_basic_nested_partial'));
+
             fileMatchesExpected(newFile, '_basic_nested_partial.js', '_basic_nested_partial.js');
+
             // two nested partials found and registered and do not have redundant items
-            should.deepEqual(_(newFile.partialsRegistry).values().value(), ['_94e8ceec2cb635d72df145bf24fea501', '_e390b316994ff22619f015b3cce7b2fa']);
+            should.deepEqual(_(newFile.partialsRegistry).values().value(), [basicPartialWithNestedPartialUID, basicNestedPartialUID]);
 
             done();
             break;
