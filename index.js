@@ -101,6 +101,8 @@ module.exports = function(options) {
       wrapper: isPartial ? partialWrapper : templateWrapper
     }, defineModuleOptions);
 
+    file.partialsRegistry = partialsRegistry;
+
     this.queue(file);
   });
 };
