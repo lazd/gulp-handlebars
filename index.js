@@ -88,7 +88,7 @@ module.exports = function(options) {
       return this.emit('error', err);
     }
 
-    file.contents = new Buffer(compiled);    
+    file.contents = new Buffer(compiled);
     file.path = gutil.replaceExtension(file.path, '.js');
 
     file.defineModuleOptions = _.defaults({
