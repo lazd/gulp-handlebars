@@ -123,14 +123,20 @@ describe('gulp-handlebars', function() {
     it('should compile template and register nested partial', function(done) {
       var hbsStream = handlebarsPlugin({ parsePartials: true });
       var basicTemplate = getFixture('Basic_with_partial.hbs');
+      var basicPartialUID = generateUniqueId(getAbsolutePartialPath('_basic_partial.hbs'));
       hbsStream.pipe(defineModule('amd'));
 
       hbsStream.on('data', function(newFile) {
         should.exist(newFile);
         should.exist(newFile.contents);
         should.exist(newFile.partialsRegistry);
-        should.equal(_(newFile.partialsRegistry).values().first(), '_ea1f7485d5b8611651421a82fc9840ce');
+        should.equal(_(newFile.partialsRegistry).values().first(), basicPartialUID);
+
+        // actualize partial uid
+        newFile.contents = new Buffer(newFile.contents.toString().replace(new RegExp(basicPartialUID, 'g'), '_basic_partial'));
+
         fileMatchesExpected(newFile, 'Basic_with_partial.js', 'Basic_with_partial.js');
+
         done();
       });
       hbsStream.write(basicTemplate);
@@ -141,13 +147,17 @@ describe('gulp-handlebars', function() {
       var hbsStream = handlebarsPlugin({ parsePartials: true });
       var basicTemplate = getFixture('Basic_with_partial.hbs');
       var basicPartial = getFixture('_basic_partial.hbs');
+      var basicPartialUID = generateUniqueId(getAbsolutePartialPath('_basic_partial.hbs'));
       hbsStream.pipe(defineModule('amd'));
 
       hbsStream.on('data', function(newFile) {
         should.exist(newFile);
         should.exist(newFile.contents);
         should.exist(newFile.partialsRegistry);
-        should.equal(_(newFile.partialsRegistry).values().first(), '_ea1f7485d5b8611651421a82fc9840ce');
+        should.equal(_(newFile.partialsRegistry).values().first(), basicPartialUID);
+
+        // actualize partial uid
+        newFile.contents = new Buffer(newFile.contents.toString().replace(new RegExp(basicPartialUID, 'g'), '_basic_partial'));
 
         switch (path.basename(newFile.path)) {
           case 'Basic_with_partial.js':
