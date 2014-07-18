@@ -21,7 +21,7 @@ module.exports = function(options) {
     }
   };
   var templateWrapper = opts.templateWrapper || 'Handlebars.template(<%= contents %>)';
-  var partialWrapper = opts.partialWrapper || 'Handlebars.registerPartial("<%= partialName %>", <%= templateWrapper %>)';
+  var partialWrapper = opts.partialWrapper || '(function() { var __cTemplate = <%= templateWrapper %>; Handlebars.registerPartial("<%= partialName %>", __cTemplate); return __cTemplate; })()';
 
   return through(function(file) {
     if (file.isNull()) {
