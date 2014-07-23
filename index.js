@@ -24,7 +24,8 @@ module.exports = function(options) {
       compiled = Handlebars.precompile(contents, compilerOptions).toString();
     }
     catch (err) {
-      return this.emit('error', err);
+      console.log(err.message);
+      compiled = Handlebars.precompile("{{ log '[gulp-handlebars] Error compiling: " + file.path + "' }}", compilerOptions).toString();
     }
 
     file.contents = new Buffer(compiled);
