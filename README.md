@@ -112,6 +112,26 @@ See the [`gulp-define-module` documentation][gulp-define-module documentation] f
 `gulp-handlebars` also sets a default [`require`](https://github.com/wbyoung/gulp-define-module#optionsrequire) of `{ Handlebars: 'handlebars' }` for [`gulp-define-module`][gulp-define-module] so Handlebars will be present in when defining AMD, Node, CommonJS, or hybrid modules.
 
 
+## Compiling to various module systems and parse nested partials automatically
+
+If you are using module wrapper you are able to parse and register nested partials automatically by passing ```parsePartials: true```. In this case you should not require each partial as separate dependency in your modules, simply add only templates as dependency for your modules and plugin will goes through templates and find all nested partials recursively.
+
+```js
+var handlebars = require('gulp-handlebars');
+var defineModule = require('gulp-define-module');
+
+gulp.task('templates', function(){
+  // means what this filter covers templates and partials files
+  gulp.src(['client/templates/*.hbs'])
+    .pipe(handlebars({
+      parsePartials: true
+    }))
+    .pipe(defineModule('amd'))
+    .pipe(gulp.dest('build/js/'));
+});
+```
+
+
 ## API
 
 ### handlebars(options)
