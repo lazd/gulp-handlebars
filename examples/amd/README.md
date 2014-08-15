@@ -24,7 +24,7 @@ This example assumes a directory structure that looks something like this:
 
 ## Output
 
-The templates will be compiled down as follows:
+The template files will be compiled as follows:
 
 | File path                       | Template location                |
 | ------------------------------- | -------------------------------- |

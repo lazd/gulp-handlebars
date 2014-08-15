@@ -28,9 +28,9 @@ This example assumes a directory structure that looks something like this:
 
 ## Output
 
-The templates will be compiled down to the following properties:
+The template files will be compiled to the following properties:
 
-| File path                | Template location  |
+| File path                | Property           |
 | ------------------------ | ------------------ |
 | templates/App.hbs        | exports.App        |
 | templates/App/header.hbs | exports.App.header |
