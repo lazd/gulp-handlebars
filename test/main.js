@@ -56,7 +56,7 @@ describe('gulp-handlebars', function() {
       stream.end();
     });
 
-    it('should process ast', function(done) {
+    it('should process AST', function(done) {
       var stream = handlebarsPlugin({
           processAST: function(ast) {
               ast.statements[0].string = 'Preprocessed template';

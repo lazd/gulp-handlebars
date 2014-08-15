@@ -24,9 +24,10 @@ module.exports = function(opts) {
     var compiled = null;
     try {
       var ast = handlebars.parse(contents);
-      // allow to preprocess ast before compiling
+      // Preprocess AST before compiling
       if (opts.processAST) {
-        ast = opts.processAST(ast) || ast; // processAST may return new ast or change it in place
+        // processAST may return new AST or change it in place
+        ast = opts.processAST(ast) || ast;
       }
       compiled = handlebars.precompile(ast, compilerOptions).toString();
     }

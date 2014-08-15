@@ -1,2 +1,4 @@
 /node_modules
 /*.log
+build
+examples/singleModule/templates/index.js
