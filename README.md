@@ -108,6 +108,23 @@ gulp.task('templates', function(){
 });
 ```
 
+**Note:** When compiling Ember templates to a module using `gulp-define-module`, be sure to set `options.context.handlebars` accordingly:
+
+```js
+gulp.task('templates', function(){
+  gulp.src('source/templates/*.hbs')
+    .pipe(handlebars({
+      handlebars: require('ember-handlebars')
+    }))
+    .pipe(defineModule('amd', {
+      context: {
+        handlebars: 'Ember.Handlebars.template(<%= contents %>)'
+      }
+    }))
+    .pipe(gulp.dest('build/js/'));
+});
+```
+
 ## Compiling using a specific Handlebars versions
 
 You can use different versions of Handlebars by specifying the version in your `package.json` and passing it as `options.handlebars`:
