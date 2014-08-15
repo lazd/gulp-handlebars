@@ -1,10 +1,13 @@
-# Compile templates as AMD modules
+# Compile templates for use in Ember.js
 
-This example will show you how to compile templates as AMD modules.
+This example will show you how to compile templates for use in Ember.js applications.
 
 ## Dependencies
 
-* [`gulp-define-module`](https://www.npmjs.org/package/gulp-define-module) - Create AMD modules for templates
+* [`ember-handlebars`](https://www.npmjs.org/package/ember-handlebars) - Compile templates for Ember.js
+* [`gulp-declare`](https://www.npmjs.org/package/gulp-declare) - Declare properties and sub-properties
+* [`gulp-concat`](https://www.npmjs.org/package/gulp-concat) - Combine output into a single file
+* [`gulp-wrap`](https://www.npmjs.org/package/gulp-wrap) - Add `require()` and `Handlebars.template()` statements
 
 ## Input
 
@@ -24,14 +27,14 @@ This example assumes a directory structure that looks something like this:
 
 ## Output
 
-The templates will be compiled down as follows:
+The template files will be compiled to the following namespace paths:
 
-| File path                       | Template location                |
-| ------------------------------- | -------------------------------- |
-| source/templates/App.hbs        | build/js/templates/App.js        |
-| source/templates/App/header.hbs | build/js/templates/App/header.js |
-| source/templates/App/footer.hbs | build/js/templates/App/footer.js |
-| source/templates/Other.item.hbs | build/js/templates/Other.item.js |
+| File path                       | Namespace path             |
+| ------------------------------- | -------------------------- |
+| source/templates/App.hbs        | Ember.TEMPLATES.App        |
+| source/templates/App/header.hbs | Ember.TEMPLATES.App.header |
+| source/templates/App/footer.hbs | Ember.TEMPLATES.App.footer |
+| source/templates/Other.item.hbs | Ember.TEMPLATES.Other.item |
 
 **Note:** You can have multiple levels of directories under `source/templates/` for deeper nesting.
 
