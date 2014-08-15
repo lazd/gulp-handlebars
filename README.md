@@ -61,7 +61,7 @@ this["MyApp"]["templates"]["home"]["header"] = Handlebars.template(function() { 
 
 ## Namespace templates according to nested directories
 
-See the [namespaceByDirectory example](blob/master/examples/namespaceByDirectory) if you'd like to compile templates with a mapping that looks like this:
+See the [namespaceByDirectory example](examples/namespaceByDirectory) if you'd like to compile templates with a mapping that looks like this:
 
 | File path                       | Namespace path             |
 | ------------------------------- | -------------------------- |
@@ -75,7 +75,7 @@ See the [namespaceByDirectory example](blob/master/examples/namespaceByDirectory
 
 See the [`gulp-define-module` documentation][gulp-define-module documentation] for details on how to define templates as AMD, Node, CommonJS, and hybrid modules.
 
-See the [amd example](blob/master/examples/amd) for a full example of compiling templates to AMD modules.
+See the [amd example](examples/amd) for a full example of compiling templates to AMD modules.
 
 `gulp-handlebars` makes the following available for use in `gulp-define-module`'s [`wrapper` template option](https://github.com/wbyoung/gulp-define-module#optionswrapper):
 
@@ -87,7 +87,7 @@ See the [amd example](blob/master/examples/amd) for a full example of compiling 
 
 ## Compiling templates for use in Ember applications
 
-See the [ember example](blob/master/examples/ember) for a full example of compiling templates for Ember.
+See the [ember example](examples/ember) for a full example of compiling templates for Ember.
 
 You can use [`ember-handlebars`][ember-handlebars] to compile templates for use within Ember:
 
@@ -164,7 +164,7 @@ var html = appTemplate(data);
 
 ## Compiling to a single module for use in Node/Browserify
 
-See the [singleModule example](blob/master/examples/singleModule) if you'd like to have a single module that contains all of your templates that can be used like so:
+See the [singleModule example](examples/singleModule) if you'd like to have a single module that contains all of your templates that can be used like so:
 
 #### yourApp.js
 ```js
