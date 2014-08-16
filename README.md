@@ -125,7 +125,7 @@ gulp.task('templates', function(){
 });
 ```
 
-## Compiling using a specific Handlebars versions
+## Compiling using a specific Handlebars version
 
 You can use different versions of Handlebars by specifying the version in your `package.json` and passing it as `options.handlebars`:
 
