@@ -92,13 +92,13 @@ module.exports = function(options) {
     file.path = gutil.replaceExtension(file.path, '.js');
 
     file.defineModuleOptions = _.defaults({
-      require: _.extend({ Handlebars: 'handlebars', __exports__: 'exports' }, defineModuleOptions.require, partialsDepsMap),
+      require: _.extend({ Handlebars: 'handlebars' }, defineModuleOptions.require, partialsDepsMap),
       context: _.extend({
         isPartial: isPartial,
         partialName: partialId,
         templateWrapper: templateWrapper
       }, defineModuleOptions.context),
-      wrapper: '__exports__["default"] = ' + (isPartial ? partialWrapper : templateWrapper)
+      wrapper: isPartial ? partialWrapper : templateWrapper
     }, defineModuleOptions);
 
     file.partialsRegistry = partialsRegistry;
