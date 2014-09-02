@@ -20,8 +20,8 @@ module.exports = function(options) {
       handlebars: 'Handlebars.template(<%= contents %>)'
     }
   };
-  var templateWrapper = opts.templateWrapper || 'Handlebars.template(<%= contents %>)';
-  var partialWrapper = opts.partialWrapper || '(function() { var __cTemplate = <%= templateWrapper %>; Handlebars.registerPartial("<%= partialName %>", __cTemplate); return __cTemplate; })()';
+  var templateWrapper = opts.templateWrapper || '(function() { var __cTemplate = Handlebars.template(<%= contents %>); __cTemplate["default"] = __cTemplate; return __cTemplate; })()';
+  var partialWrapper = opts.partialWrapper || '(function() { var __cTemplate = <%= templateWrapper %>; Handlebars.registerPartial("<%= partialName %>", __cTemplate); __cTemplate["default"] = __cTemplate; return __cTemplate; })()';
 
   return through(function(file) {
     if (file.isNull()) {
