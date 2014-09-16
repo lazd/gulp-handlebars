@@ -155,6 +155,8 @@ gulp.task('templates', function(){
 });
 ```
 
+**The runtime you include on the client side MUST match the version you compile templates with.** You cannot use the the 2.x runtime with 1.x templates. The [handlebars1 example](examples/handlebars1) copies the runtime from `node_modules/handlebars/dist/handlebars.runtime.js` and uses that on the client side. Follow a similar pattern in your application to keep the runtime up to date with the compiler.
+
 ## Compiling to separate modules for Node/Browserify
 
 This example will make templates available for loading via [Node's require](http://nodejs.org/api/globals.html#globals_require):
