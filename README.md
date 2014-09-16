@@ -133,7 +133,7 @@ You can use different versions of Handlebars by specifying the version in your `
 ```json
 {
   "devDependencies": {
-    "handlebars": "^2.0.0-alpha"
+    "handlebars": "^1.3.0"
   }
 }
 ```
