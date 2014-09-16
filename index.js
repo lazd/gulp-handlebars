@@ -32,7 +32,9 @@ module.exports = function(opts) {
       compiled = handlebars.precompile(ast, compilerOptions).toString();
     }
     catch (err) {
-      this.emit('error', new gutil.PluginError(PLUGIN_NAME, err));
+      this.emit('error', new gutil.PluginError(PLUGIN_NAME, err, {
+        fileName: file.path
+      }));
       return callback();
     }
 

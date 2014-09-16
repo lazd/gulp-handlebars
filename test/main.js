@@ -33,6 +33,7 @@ describe('gulp-handlebars', function() {
       var invalidTemplate = getFixture('Invalid.hbs');
 
       stream.on('error', function(err) {
+        err.fileName.should.equal('test/fixtures/Invalid.hbs'),
         err.should.be.an.instanceOf(Error);
         err.message.should.equal(getExpectedString('Error.txt'));
         done();
