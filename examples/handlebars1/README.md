@@ -44,8 +44,7 @@ var gulp = require('gulp');
 var wrap = require('gulp-wrap');
 var declare = require('gulp-declare');
 var concat = require('gulp-concat');
-/** REMOVE ME **/ var handlebars = require('../../');
-/** USE ME **/ // var handlebars = require('gulp-handlebars');
+var handlebars = require('gulp-handlebars');
 
 gulp.task('templates', function(){
   gulp.src('source/templates/*.hbs')
