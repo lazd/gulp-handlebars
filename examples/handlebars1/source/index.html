@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Handlebars Test</title>
+  <script src="js/handlebars.runtime.js"></script>
+  <script src="js/templates.js"></script>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    // This will render the template defined by App.header.hbs
+    document.querySelector('#app').innerHTML = this["MyApp"]["templates"]["App"]();
+  </script>
+</body>
+</html>
