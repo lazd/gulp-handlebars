@@ -1,4 +1,7 @@
-/node_modules
-/*.log
+# Any node_modules folder
+node_modules
+# Any build folder
 build
+# The output of the singleModule example
 examples/singleModule/templates/index.js
+*.log

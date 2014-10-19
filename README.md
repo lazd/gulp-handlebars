@@ -181,6 +181,38 @@ var appTemplate = require('./build/templates/App.Header.js');
 var html = appTemplate(data);
 ```
 
+## Compiling partials
+
+The following example will precompile and register partials for all `.hbs` files in `source/templates/` that start with an underscore, then store the result as `build/js/partials.js`;
+
+```javascript
+var path = require('path');
+var gulp = require('gulp');
+var wrap = require('gulp-wrap');
+var concat = require('gulp-concat');
+var handlebars = require('gulp-handlebars');
+
+gulp.task('partials', function() {
+  // Assume all partials start with an underscore
+  // You could also put them in a folder such as source/templates/partials/*.hbs
+  gulp.src(['source/templates/_*.hbs'])
+    .pipe(handlebars())
+    .pipe(wrap('Handlebars.registerPartial(<%= processPartialName(file.relative) %>, Handlebars.template(<%= contents %>));', {}, {
+      imports: {
+        processPartialName: function(fileName) {
+          // Strip the extension and the underscore
+          // Escape the output with JSON.stringify
+          return JSON.stringify(path.basename(fileName, '.js').substr(1));
+        }
+      }
+    }))
+    .pipe(concat('partials.js'))
+    .pipe(gulp.dest('build/js/'));
+});
+```
+
+See the [partials example](examples/partials) for a full example that compiles partials and templates down to a single file.
+
 ## Compiling to a single module for use in Node/Browserify
 
 See the [singleModule example](examples/singleModule) if you'd like to have a single module that contains all of your templates that can be used like so:
@@ -217,12 +249,12 @@ Type: `Object`
 
 Compiler options to pass to `Handlebars.precompile()`.
 
-### options.processAST
+#### options.processAST
 Type: `Function`
 
 A function which will be passed the parsed Handlebars Abstract Syntax Tree. You can modify the AST in place or return a new AST to change the source of the precompiled template.
 
-### options.handlebars
+#### options.handlebars
 Type: `Object`
 
 Handlebars library to use for precompilation. By default, the latest stable version of Handlebars is used.
