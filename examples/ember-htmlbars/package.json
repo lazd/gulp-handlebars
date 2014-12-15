@@ -1,0 +1,10 @@
+{
+  "name": "gulp-handlebars-htmlbars",
+  "description": "An example that shows how to compile gulp-handlebars with htmlbars",
+  "version": "0.0.0",
+  "main": "gulpfile.js",
+  "devDependencies": {
+    "gulp-concat": "^2.4.1",
+    "ember-cli-htmlbars": "https://github.com/mattma/ember-cli-htmlbars/tarball/master"
+  }
+}
