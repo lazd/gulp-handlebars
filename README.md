@@ -261,6 +261,11 @@ Type: `Object`
 
 Handlebars library to use for precompilation. By default, the latest stable version of Handlebars is used.
 
+#### options.compiler
+Type: `Function`
+
+Custom compiler function to transform Handlebars template. By default, the latest stable version of Handlebars.precompile is used.
+
 
 
 [travis-url]: http://travis-ci.org/lazd/gulp-handlebars
