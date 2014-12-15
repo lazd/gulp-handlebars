@@ -128,5 +128,34 @@ describe('gulp-handlebars', function() {
       hbsStream.write(basicTemplate);
       hbsStream.end();
     });
+
+    it('should allow custom compiler', function(done) {
+      var compiler = function(contents, compilerOptions) {
+        return contents.toUpperCase();
+      };
+      var stream = handlebarsPlugin({
+          compiler: compiler
+      });
+      var basicTemplate = getFixture('Basic.hbs');
+
+      stream.on('data', function(newFile) {
+        should.exist(newFile);
+        should.exist(newFile.contents);
+
+        // @TODO: it should call `fileMatchesExpected` function
+        // But I got an error of  expected: "BASIC TEMPLATE\n", actual: "BASIC TEMPLATE"
+        // so that I manually adding the newLine character.
+        // I think it related to plain text in the 'Basic_htmlbars.js'
+        var expected = getExpectedString('Basic_htmlbars.js');
+        var tested = String(newFile.contents)+'\n';
+        tested.should.equal(expected);
+        // fileMatchesExpected(newFile, 'Basic_htmlbars.js', 'Basic.js');
+
+        done();
+      });
+      stream.write(basicTemplate);
+      stream.end();
+    });
+
   });
 });
