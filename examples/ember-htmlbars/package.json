@@ -5,6 +5,6 @@
   "main": "gulpfile.js",
   "devDependencies": {
     "gulp-concat": "^2.4.1",
-    "ember-cli-htmlbars": "https://github.com/mattma/ember-cli-htmlbars/tarball/master"
+    "ember-cli-htmlbars": "^0.5.3"
   }
 }
