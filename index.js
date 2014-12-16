@@ -33,7 +33,7 @@ module.exports = function(opts) {
     };
     // defaultCompiler used to render any handlebars templates
     // `opts.compiler` allows third party to override the internal compiler
-    var compiler = (opts.compiler && typeof opts.compiler === 'function') ? opts.compiler : defaultCompiler;
+    var compiler = (typeof opts.compiler === 'function') ? opts.compiler : defaultCompiler;
     try {
       compiled = compiler(contents, compilerOptions);
     }
