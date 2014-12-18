@@ -1,5 +1,7 @@
 var gulp = require('gulp');
 var concat = require('gulp-concat');
+var wrapAmd = require('gulp-wrap-amd');
+var replace = require('gulp-replace');
 /** REMOVE ME **/ var handlebars = require('../../');
 /** USE ME **/ // var handlebars = require('gulp-handlebars');
 
@@ -14,6 +16,15 @@ gulp.task('templates', function() {
       handlebars: require('ember-handlebars'),
       compiler: compiler.processString
     }))
+    .pipe(wrapAmd({
+      deps: ['exports'],          // dependency array
+      params: ['__exports__'],        // params for callback
+      moduleRoot: 'source/',
+      modulePrefix: 'rocks/'
+    }))
+    .pipe(replace(
+        /return export default/, 'return __exports__["default"] ='
+    ))
     // Concatenate down to a single file
     .pipe(concat('templates.js'))
     // Write the output into the templates folder

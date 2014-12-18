@@ -26,7 +26,7 @@ This example assumes a directory structure that looks something like this:
 
 ## Output
 
-Output could not be used directly within Ember application. You most likely use additional modules like  [`gulp-declare`](https://www.npmjs.org/package/gulp-declare), [`gulp-wrap`](https://www.npmjs.org/package/gulp-wrap), or [`gulp-define-module`](https://www.npmjs.org/package/gulp-define-module). You could find the working example in [Ember-Rocks](https://www.npmjs.com/package/ember-rocks) project.
+Output could be used directly within Ember application >1.9.0 and Handlebars >2.0.0 along with HtmlBars. [gulp-wrap-amd](https://github.com/phated/gulp-wrap-amd) is the Go-To module for transforming any handlebars template to AMD style. You could find the working example in [Ember-Rocks](https://www.npmjs.com/package/ember-rocks) project.
 
 ## Running the example
 
@@ -41,18 +41,33 @@ cat build/js/templates.js
 You should see the following output:
 
 ```js
-export default Ember.Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+define("templates/App",["exports"],function(__exports__){
+
+return __exports__["default"] = Ember.Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
   data.buffer.push("This is the app!");
-  },"useData":true})
-export default Ember.Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+  },"useData":true});
+});
+
+define("templates/Other.item",["exports"],function(__exports__){
+
+return __exports__["default"] = Ember.Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
   data.buffer.push("An item!");
-  },"useData":true})
-export default Ember.Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+  },"useData":true});
+});
+
+define("templates/App/footer",["exports"],function(__exports__){
+
+return __exports__["default"] = Ember.Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
   data.buffer.push("<footer>Goodbye!</footer>");
-  },"useData":true})
-export default Ember.Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+  },"useData":true});
+});
+
+define("templates/App/header",["exports"],function(__exports__){
+
+return __exports__["default"] = Ember.Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
   data.buffer.push("<header>Hello!</header>");
-  },"useData":true})
+  },"useData":true});
+});
 ```
 
 ## Usage
@@ -60,7 +75,7 @@ export default Ember.Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main
 #### 1. Install development dependencies:
 
 ```shell
-npm install --save-dev ember-handlebars gulp-handlebars gulp-concat ember-cli-htmlbars
+npm install --save-dev ember-handlebars gulp-handlebars gulp-concat ember-cli-htmlbars gulp-wrap-amd gulp-replace
 ```
 
 Note: Ember core team is [working on `ember-template-compiler` module](https://github.com/emberjs/ember.js/issues/9911) to have the full features for compiling **HTMLBars**. It will replace `ember-cli-htmlbars` when the API is completed.
@@ -70,6 +85,8 @@ Note: Ember core team is [working on `ember-template-compiler` module](https://g
 ```js
 var gulp = require('gulp');
 var concat = require('gulp-concat');
+var wrapAmd = require('gulp-wrap-amd');
+var replace = require('gulp-replace');
 var handlebars = require('gulp-handlebars');
 
 var Htmlbars = require('ember-cli-htmlbars');
@@ -83,10 +100,23 @@ gulp.task('templates', function() {
       handlebars: require('ember-handlebars'),
       compiler: compiler.processString
     }))
+    .pipe(wrapAmd({
+      deps: ['exports'],          // dependency array
+      params: ['__exports__'],        // params for callback
+      moduleRoot: 'source/',
+      modulePrefix: 'rocks/'
+    }))
+    .pipe(replace(
+        /return export default/, 'return __exports__["default"] ='
+    ))
     // Concatenate down to a single file
     .pipe(concat('templates.js'))
     // Write the output into the templates folder
     .pipe(gulp.dest('build/js/'));
+});
+
+// Default task
+gulp.task('default', ['templates']);
 });
 ```
 
@@ -113,28 +143,3 @@ You may also concatenate into your build output if you like. See [`gulp-concat`]
 * **Source template location:** Change the glob passed to `gulp.src()`
 * **Output filename:** Change the filename passed to `concat()`
 * **Output directory:** Change the directory passed to `gulp.dest()`
-
-#### Simplify code if you don't want to use nested folders
-
-You can achieve the same result without nested folders. The following directory structure will yield identical output:
-
-```
-├── index.js      # The main entry point of your application
-└── templates     # A folder containing templates named with dot notation
-    ├── App.hbs
-    ├── App.header.hbs
-    ├── App.footer.hbs
-    ├── App.etc.hbs
-    └── Other.item.hbs
-```
-
-You can then drop the `options.processName` function when calling `declare()`:
-
-```js
-declare({
-  root: 'exports'
-  noRedeclare: true // Avoid duplicate delcarations
-})
-```
-
-This will result in the same output as the above example, but will nest templates based solely on their filename, ignoring nested folders.
