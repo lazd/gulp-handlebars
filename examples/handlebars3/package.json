@@ -1,0 +1,9 @@
+{
+  "name": "gulp-handlebars-handlebars3",
+  "description": "An example of using Handlebars 3.x with gulp-handlebars",
+  "version": "0.0.0",
+  "main": "gulpfile.js",
+  "devDependencies": {
+    "handlebars": "^3.0.0"
+  }
+}

@@ -1,12 +1,12 @@
-# Compile templates against Handlebars 1.x
+# Compile templates against Handlebars 3.x
 
 This example will show you how to compile templates using a specific version of Handlebars.
 
-**The runtime you include on the client side MUST match the version you compile templates with.** You cannot use the the 2.x runtime with 1.x templates. This example copies the runtime from `node_modules/handlebars/dist/handlebars.runtime.js` and uses that on the client side. Follow a similar pattern in your application to keep the runtime up to date with the compiler.
+**The runtime you include on the client side MUST match the version you compile templates with.** You cannot use the the 2.x runtime with 3.x templates. This example copies the runtime from `node_modules/handlebars/dist/handlebars.runtime.js` and uses that on the client side. Follow a similar pattern in your application to keep the runtime up to date with the compiler.
 
 ## Dependencies
 
-* [`handlebars@1.3.0`](https://www.npmjs.org/package/handlebars) - An older version of handlebars
+* [`handlebars@3.0.0`](https://www.npmjs.org/package/handlebars) - The latest version of handlebars
 * [`gulp-declare`](https://www.npmjs.org/package/gulp-declare) - Declare properties and sub-properties
 * [`gulp-concat`](https://www.npmjs.org/package/gulp-concat) - Combine output into a single file
 * [`gulp-wrap`](https://www.npmjs.org/package/gulp-wrap) - Add `require()` and `Handlebars.template()` statements
@@ -17,8 +17,8 @@ Type the following commands from the root of this repository:
 
 ```
 npm install # install the plugin's dependencies
-cd examples/handlebars1
-npm install # install Handlebars 1.x locally
+cd examples/handlebars3
+npm install # install Handlebars 3.x locally
 gulp
 open build/index.html
 ```
@@ -34,7 +34,7 @@ This is the app!
 
 ```shell
 # Note the specific version of Handlebars is specified here
-npm install --save-dev gulp-handlebars gulp-wrap gulp-declare gulp-concat handlebars@1.3.0
+npm install --save-dev gulp-handlebars gulp-wrap gulp-declare gulp-concat handlebars@3.0.0
 ```
 
 #### 2. Add the `require()` statements and `template` task to your gulpfile
