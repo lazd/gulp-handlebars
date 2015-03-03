@@ -1,3 +1,3 @@
 {"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
-  return "Basic template";
-  },"useData":true}
+    return "Basic template";
+},"useData":true}

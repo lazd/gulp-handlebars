@@ -1,23 +1,23 @@
 {
   "name": "gulp-handlebars",
-  "version": "3.0.1",
+  "version": "4.0.0",
   "description": "Handlebars plugin for gulp",
   "main": "index.js",
   "dependencies": {
-    "through2": "^0.6.1",
-    "handlebars": "^2.0.0",
-    "gulp-util": "^3.0.0"
+    "through2": "^0.6.3",
+    "handlebars": "^3.0.0",
+    "gulp-util": "^3.0.4"
   },
   "devDependencies": {
     "ember-handlebars": "^1.2.0",
-    "gulp": "^3.8.7",
-    "gulp-concat": "^2.3.4",
+    "gulp": "^3.8.11",
+    "gulp-concat": "^2.5.2",
     "gulp-declare": "^0.3.0",
     "gulp-define-module": "^0.1.1",
-    "gulp-wrap": "^0.3.0",
-    "mocha": "^1.21.4",
+    "gulp-wrap": "^0.11.0",
+    "mocha": "^2.1.0",
     "nsdeclare": "^0.1.0",
-    "should": "^4.0.4"
+    "should": "^5.0.1"
   },
   "scripts": {
     "test": "./node_modules/.bin/mocha"

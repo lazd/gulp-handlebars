@@ -1,4 +1,4 @@
-# Compile and register partials with Handlebars 3
+# Compile and register partials with Handlebars 2.x
 
 This example will show you how to compile partials and templates down to a single file.
 
@@ -6,7 +6,7 @@ The stream merging technique is from gulp's [Using multiple sources in one task 
 
 ## Dependencies
 
-* [`handlebars@3.0.0`](https://www.npmjs.org/package/handlebars) - The latest version of handlebars
+* [`handlebars@2.0.0`](https://www.npmjs.org/package/handlebars) - An older version of handlebars
 * [`gulp-declare`](https://www.npmjs.org/package/gulp-declare) - Declare properties and sub-properties
 * [`gulp-concat`](https://www.npmjs.org/package/gulp-concat) - Combine output into a single file
 * [`gulp-wrap`](https://www.npmjs.org/package/gulp-wrap) - Add `require()` and `Handlebars.template()` statements
@@ -18,7 +18,7 @@ Type the following commands from the root of this repository:
 
 ```
 npm install # install the plugin's dependencies
-cd examples/handlebars3-partials
+cd examples/handlebars2-partials
 npm install # install the example's dependencies
 gulp
 open build/index.html
@@ -36,7 +36,7 @@ This is the partial!
 
 ```shell
 # Note the specific version of Handlebars is specified here
-npm install --save-dev gulp-handlebars gulp-wrap gulp-declare gulp-concat merge-stream handlebars@3.0.0
+npm install --save-dev gulp-handlebars gulp-wrap gulp-declare gulp-concat merge-stream handlebars@2.0.0
 ```
 
 #### 2. Add the `require()` statements and `template` task to your gulpfile

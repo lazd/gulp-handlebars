@@ -60,7 +60,7 @@ describe('gulp-handlebars', function() {
     it('should process AST', function(done) {
       var stream = handlebarsPlugin({
           processAST: function(ast) {
-            ast.statements[0].string = 'Preprocessed template';
+            ast.body[0].value = 'Preprocessed template';
           }
       });
       var basicTemplate = getFixture('Basic.hbs');
