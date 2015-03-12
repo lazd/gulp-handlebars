@@ -10,7 +10,7 @@ gulp.task('templates', function() {
   gulp.src('source/templates/**/*.hbs')
     // Compile each Handlebars template source file to a template function using Ember's Handlebars
     .pipe(handlebars({
-      handlebars: require('ember-handlebars')
+      handlebars: require('ember-template-compiler')
     }))
     // Wrap each template function in a call to Ember.Handlebars.template
     .pipe(wrap('Ember.Handlebars.template(<%= contents %>)'))

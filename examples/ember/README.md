@@ -4,7 +4,7 @@ This example will show you how to compile templates for use in Ember.js applicat
 
 ## Dependencies
 
-* [`ember-handlebars`](https://www.npmjs.org/package/ember-handlebars) - Compile templates for Ember.js
+* [`ember-template-compiler`](https://www.npmjs.org/package/ember-template-compiler) - Compile templates for Ember.js
 * [`gulp-declare`](https://www.npmjs.org/package/gulp-declare) - Declare properties and sub-properties
 * [`gulp-concat`](https://www.npmjs.org/package/gulp-concat) - Combine output into a single file
 * [`gulp-wrap`](https://www.npmjs.org/package/gulp-wrap) - Add `require()` and `Handlebars.template()` statements
@@ -66,7 +66,7 @@ this["Ember"]["TEMPLATES"]["App"]["header"] = Ember.Handlebars.template(/* compi
 #### 1. Install development dependencies:
 
 ```shell
-npm install --save-dev ember-handlebars gulp-handlebars gulp-declare gulp-concat gulp-wrap
+npm install --save-dev ember-template-compiler gulp-handlebars gulp-declare gulp-concat gulp-wrap handlebars@3.0.0
 ```
 
 #### 2. Add the `require()` statements and `template` task to your gulpfile
@@ -83,7 +83,7 @@ gulp.task('templates', function() {
   gulp.src('source/templates/**/*.hbs')
     // Compile each Handlebars template source file to a template function using Ember's Handlebars
     .pipe(handlebars({
-      handlebars: require('ember-handlebars')
+      handlebars: require('ember-template-compiler')
     }))
     // Wrap each template function in a call to Ember.Handlebars.template
     .pipe(wrap('Ember.Handlebars.template(<%= contents %>)'))
