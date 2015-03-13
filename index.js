@@ -22,14 +22,20 @@ module.exports = function(opts) {
 
     var contents = file.contents.toString();
     var compiled = null;
-    try {
+    var defaultCompiler = function(contents, options) {
       var ast = handlebars.parse(contents);
       // Preprocess AST before compiling
       if (opts.processAST) {
         // processAST may return new AST or change it in place
         ast = opts.processAST(ast) || ast;
       }
-      compiled = handlebars.precompile(ast, compilerOptions).toString();
+      return handlebars.precompile(ast, options).toString();
+    };
+    // defaultCompiler used to render any handlebars templates
+    // `opts.compiler` allows third party to override the internal compiler
+    var compiler = (typeof opts.compiler === 'function') ? opts.compiler : defaultCompiler;
+    try {
+      compiled = compiler(contents, compilerOptions);
     }
     catch (err) {
       this.emit('error', new gutil.PluginError(PLUGIN_NAME, err, {

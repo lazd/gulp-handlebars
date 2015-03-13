@@ -242,6 +242,17 @@ handlebars({
 })
 ```
 
+## Using HTMLBars with Ember
+
+See the [ember-htmlbars example](examples/ember-htmlbars) for details
+
+```js
+handlebars({
+  handlebars: emberHandlebars,
+  compiler: emberTemplateCompilerFunction
+})
+```
+
 ## API
 
 ### handlebars(options)
@@ -260,6 +271,11 @@ A function which will be passed the parsed Handlebars Abstract Syntax Tree. You 
 Type: `Object`
 
 Handlebars library to use for precompilation. By default, the latest stable version of Handlebars is used.
+
+#### options.compiler
+Type: `Function`
+
+Custom compiler function. By default, the precompile method of the provided Handlebars module is used (see [options.handlebars](#handlebarsoptions)).
 
 
 
