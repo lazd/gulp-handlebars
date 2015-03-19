@@ -248,7 +248,6 @@ See the [ember-htmlbars example](examples/ember-htmlbars) for details
 
 ```js
 handlebars({
-  handlebars: emberHandlebars,
   compiler: emberTemplateCompilerFunction
 })
 ```
@@ -256,11 +255,6 @@ handlebars({
 ## API
 
 ### handlebars(options)
-
-#### options.compilerOptions
-Type: `Object`
-
-Compiler options to pass to `Handlebars.precompile()`.
 
 #### options.processAST
 Type: `Function`
@@ -274,9 +268,17 @@ Handlebars library to use for precompilation. By default, the latest stable vers
 
 #### options.compiler
 Type: `Function`
+Default: Null
 
 Custom compiler function. By default, the precompile method of the provided Handlebars module is used (see [options.handlebars](#handlebarsoptions)).
 
+When used with HTMLBars, every **Ember.js** official release ships with a package of HTMLBars compiler. You need to pass in the desired compiler for the expected output.
+
+#### options.compilerOptions
+Type: `Object` or Boolean
+Default: false
+
+Compiler options to pass to `Handlebars.precompile(contents, options)` or `templateCompiler.precompile(contents, options)`.
 
 
 [travis-url]: http://travis-ci.org/lazd/gulp-handlebars

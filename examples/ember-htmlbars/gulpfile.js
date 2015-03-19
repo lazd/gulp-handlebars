@@ -5,16 +5,12 @@ var replace = require('gulp-replace');
 /** REMOVE ME **/ var handlebars = require('../../');
 /** USE ME **/ // var handlebars = require('gulp-handlebars');
 
-var Htmlbars = require('ember-cli-htmlbars');
-var compiler = new Htmlbars();
-
 gulp.task('templates', function() {
   // Load templates from the source/templates/ folder relative to where gulp was executed
   gulp.src('source/templates/**/*.hbs')
     // Compile each Handlebars template source file to a template function using Ember's Handlebars
     .pipe(handlebars({
-      handlebars: require('ember-handlebars'),
-      compiler: compiler.processString
+      compiler: require('./source/ember-template-compiler').precompile
     }))
     .pipe(wrapAmd({
       deps: ['exports'],          // dependency array
