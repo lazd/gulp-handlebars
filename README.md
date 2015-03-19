@@ -11,7 +11,17 @@ npm install --save-dev gulp-handlebars
 
 ## Compiling templates for the browser
 
-[`gulp-declare`][gulp-declare] and [`gulp-wrap`][gulp-wrap] can be used to safely declare template namespaces and make templates available for use in the browser.
+* Option 1: [`gulp-wrap-amd`](https://github.com/phated/gulp-wrap-amd) can be used to transform Handlebars or HTMLBars templates to AMD style then use in the browsers. (No additional modules are needed).
+
+First, install development dependencies:
+
+```shell
+npm install --save-dev gulp-handlebars gulp-wrap-amd gulp-concat
+```
+
+See **ember-htmlbars** [gulpfile.js](examples/ember-htmlbars/gulpfile.js) for details.
+
+* Options 2: [`gulp-declare`][gulp-declare] and [`gulp-wrap`][gulp-wrap] can be used to safely declare template namespaces and make templates available for use in the browser.
 
 First, install development dependencies:
 
@@ -244,13 +254,21 @@ handlebars({
 
 ## Using HTMLBars with Ember
 
-See the [ember-htmlbars example](examples/ember-htmlbars) for details
+First, read official **Ember.js** [HTMLBars announcement](http://emberjs.com/blog/2015/02/05/compiling-templates-in-1-10-0.html).
+
+"With `Ember` 1.10 and above, you will use the `ember-template-compiler.js` file that is paired with your `Ember` version. If you use our Bower repo, RubyGem, or simply download Ember from our builds site there is a `ember-template-compiler.js` in the same path as `ember.debug.js` and `ember.prod.js`."
+
+Second, you need to pass specific version of **ember-template-compiler** as an option - `compiler`. See an example below:
 
 ```js
-handlebars({
-  compiler: emberTemplateCompilerFunction
-})
+    handlebars({
+      compiler: require('./bower_components/ember/ember-template-compiler').precompile
+    })
 ```
+
+That is it. `gulp-handlebars` will take care of the rest.
+
+See example project at [ember-htmlbars](examples/ember-htmlbars) for details.
 
 ## API
 
@@ -270,9 +288,11 @@ Handlebars library to use for precompilation. By default, the latest stable vers
 Type: `Function`
 Default: Null
 
-Custom compiler function. By default, the precompile method of the provided Handlebars module is used (see [options.handlebars](#handlebarsoptions)).
+Custom compiler function.
 
-When used with HTMLBars, every **Ember.js** official release ships with a package of HTMLBars compiler. You need to pass in the desired compiler for the expected output.
+By default, the `precompile` method of the provided `Handlebars` module is used (see [options.handlebars](#handlebarsoptions)).
+
+If it is not `null`, it is assumed to be compiled in **HTMLBars** mode. When used with **HTMLBars**, every **Ember.js** official release ships with a package of **HTMLBars** template compiler. You need to pass in the desired compiler for the expected output. See example project at [ember-htmlbars](examples/ember-htmlbars) for details.
 
 #### options.compilerOptions
 Type: `Object` or Boolean
