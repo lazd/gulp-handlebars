@@ -1,12 +1,12 @@
-# Compile templates for use in Ember.js and HTMLBars
+# Compile HTMLBars templates for Ember.js
 
-This example will show you how to compile handlebars#2.0.0 templates for use in Ember.js applications with HTMLBars.
+This example will show you how to compile HtmlBars templates for use in Ember.js applications.
 
 ## Dependencies
 
-* [`ember-handlebars`](https://www.npmjs.org/package/ember-handlebars) - Compile templates for Ember.js
 * [`gulp-concat`](https://www.npmjs.org/package/gulp-concat) - Combine output into a single file
-* [`ember-cli-htmlbars`](https://www.npmjs.org/package/ember-cli-htmlbars) - Compile templates for Ember.js with HTMLBars
+* [`gulp-replace`](https://www.npmjs.com/package/gulp-replace) - A string replace plugin for gulp
+* [`gulp-wrap-amd`](https://github.com/phated/gulp-wrap-amd) - Transforming templates to AMD style used in browsers.
 
 ## Input
 
@@ -26,7 +26,9 @@ This example assumes a directory structure that looks something like this:
 
 ## Output
 
-Output could be used directly within Ember application >1.9.0 and Handlebars >2.0.0 along with HtmlBars. [gulp-wrap-amd](https://github.com/phated/gulp-wrap-amd) is the Go-To module for transforming any handlebars template to AMD style. You could find the working example in [Ember-Rocks](https://www.npmjs.com/package/ember-rocks) project.
+Output could be used directly within Ember application >1.9.0 and Handlebars >2.0.0 along with HtmlBars. You could find the working example in [Ember-Rocks](https://www.npmjs.com/package/ember-rocks) project.
+
+Note: `ember-rocks` is the gulp version of `ember-cli`.
 
 ## Running the example
 
@@ -41,32 +43,144 @@ cat build/js/templates.js
 You should see the following output:
 
 ```js
-define("templates/App",["exports"],function(__exports__){
+define("rocks/templates/App",["exports"],function(__exports__){
 
-return __exports__["default"] = Ember.Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
-  data.buffer.push("This is the app!");
-  },"useData":true});
+return __exports__["default"] = Ember.HTMLBars.template((function() {
+  return {
+    isHTMLBars: true,
+    blockParams: 0,
+    cachedFragment: null,
+    hasRendered: false,
+    build: function build(dom) {
+      var el0 = dom.createTextNode("This is the app!");
+      return el0;
+    },
+    render: function render(context, env, contextualElement) {
+      var dom = env.dom;
+      dom.detectNamespace(contextualElement);
+      var fragment;
+      if (this.cachedFragment === null) {
+        fragment = this.build(dom);
+        if (this.hasRendered) {
+          this.cachedFragment = fragment;
+        } else {
+          this.hasRendered = true;
+        }
+      }
+      if (this.cachedFragment) {
+        fragment = dom.cloneNode(this.cachedFragment, true);
+      }
+      return fragment;
+    }
+  };
+}()));;
+
 });
 
-define("templates/Other.item",["exports"],function(__exports__){
+define("rocks/templates/Other.item",["exports"],function(__exports__){
 
-return __exports__["default"] = Ember.Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
-  data.buffer.push("An item!");
-  },"useData":true});
+return __exports__["default"] = Ember.HTMLBars.template((function() {
+  return {
+    isHTMLBars: true,
+    blockParams: 0,
+    cachedFragment: null,
+    hasRendered: false,
+    build: function build(dom) {
+      var el0 = dom.createTextNode("An item!");
+      return el0;
+    },
+    render: function render(context, env, contextualElement) {
+      var dom = env.dom;
+      dom.detectNamespace(contextualElement);
+      var fragment;
+      if (this.cachedFragment === null) {
+        fragment = this.build(dom);
+        if (this.hasRendered) {
+          this.cachedFragment = fragment;
+        } else {
+          this.hasRendered = true;
+        }
+      }
+      if (this.cachedFragment) {
+        fragment = dom.cloneNode(this.cachedFragment, true);
+      }
+      return fragment;
+    }
+  };
+}()));;
+
 });
 
-define("templates/App/footer",["exports"],function(__exports__){
+define("rocks/templates/App/footer",["exports"],function(__exports__){
 
-return __exports__["default"] = Ember.Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
-  data.buffer.push("<footer>Goodbye!</footer>");
-  },"useData":true});
+return __exports__["default"] = Ember.HTMLBars.template((function() {
+  return {
+    isHTMLBars: true,
+    blockParams: 0,
+    cachedFragment: null,
+    hasRendered: false,
+    build: function build(dom) {
+      var el0 = dom.createElement("footer");
+      var el1 = dom.createTextNode("Goodbye!");
+      dom.appendChild(el0, el1);
+      return el0;
+    },
+    render: function render(context, env, contextualElement) {
+      var dom = env.dom;
+      dom.detectNamespace(contextualElement);
+      var fragment;
+      if (this.cachedFragment === null) {
+        fragment = this.build(dom);
+        if (this.hasRendered) {
+          this.cachedFragment = fragment;
+        } else {
+          this.hasRendered = true;
+        }
+      }
+      if (this.cachedFragment) {
+        fragment = dom.cloneNode(this.cachedFragment, true);
+      }
+      return fragment;
+    }
+  };
+}()));;
+
 });
 
-define("templates/App/header",["exports"],function(__exports__){
+define("rocks/templates/App/header",["exports"],function(__exports__){
 
-return __exports__["default"] = Ember.Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
-  data.buffer.push("<header>Hello!</header>");
-  },"useData":true});
+return __exports__["default"] = Ember.HTMLBars.template((function() {
+  return {
+    isHTMLBars: true,
+    blockParams: 0,
+    cachedFragment: null,
+    hasRendered: false,
+    build: function build(dom) {
+      var el0 = dom.createElement("header");
+      var el1 = dom.createTextNode("Hello!");
+      dom.appendChild(el0, el1);
+      return el0;
+    },
+    render: function render(context, env, contextualElement) {
+      var dom = env.dom;
+      dom.detectNamespace(contextualElement);
+      var fragment;
+      if (this.cachedFragment === null) {
+        fragment = this.build(dom);
+        if (this.hasRendered) {
+          this.cachedFragment = fragment;
+        } else {
+          this.hasRendered = true;
+        }
+      }
+      if (this.cachedFragment) {
+        fragment = dom.cloneNode(this.cachedFragment, true);
+      }
+      return fragment;
+    }
+  };
+}()));;
+
 });
 ```
 
@@ -75,12 +189,28 @@ return __exports__["default"] = Ember.Handlebars.template({"compiler":[6,">= 2.0
 #### 1. Install development dependencies:
 
 ```shell
-npm install --save-dev ember-handlebars gulp-handlebars gulp-concat ember-cli-htmlbars gulp-wrap-amd gulp-replace
+npm install --save-dev gulp-handlebars gulp-concat gulp-wrap-amd gulp-replace
 ```
 
-Note: Ember core team is [working on `ember-template-compiler` module](https://github.com/emberjs/ember.js/issues/9911) to have the full features for compiling **HTMLBars**. It will replace `ember-cli-htmlbars` when the API is completed.
+#### 2. Require `ember-template-compiler` module that is paired with your Ember version
 
-#### 2. Add the `require()` statements and `template` task to your gulpfile
+Please, read the details [here](http://emberjs.com/blog/2015/02/05/compiling-templates-in-1-10-0.html) for the reason why you need to do this step.
+
+```js
+var compiler = require('./bower_components/ember/ember-template-compiler');
+```
+
+Example: usage in `gulp-handlebars` plugins as an option - 'compiler'
+
+```js
+    ...
+    .pipe(handlebars({
+      compiler: require('./bower_components/ember/ember-template-compiler').precompile
+    }))
+    ...
+```
+
+#### 3. Add the `require()` statements and `template` task to your gulpfile
 
 ```js
 var gulp = require('gulp');
@@ -89,16 +219,12 @@ var wrapAmd = require('gulp-wrap-amd');
 var replace = require('gulp-replace');
 var handlebars = require('gulp-handlebars');
 
-var Htmlbars = require('ember-cli-htmlbars');
-var compiler = new Htmlbars();
-
 gulp.task('templates', function() {
   // Load templates from the source/templates/ folder relative to where gulp was executed
   gulp.src('source/templates/**/*.hbs')
     // Compile each Handlebars template source file to a template function using Ember's Handlebars
     .pipe(handlebars({
-      handlebars: require('ember-handlebars'),
-      compiler: compiler.processString
+      compiler: require('./source/ember-template-compiler').precompile
     }))
     .pipe(wrapAmd({
       deps: ['exports'],          // dependency array
@@ -117,7 +243,6 @@ gulp.task('templates', function() {
 
 // Default task
 gulp.task('default', ['templates']);
-});
 ```
 
 #### 3. Include the `build/js/templates.js` file in your application
@@ -127,19 +252,4 @@ gulp.task('default', ['templates']);
 
 You may also concatenate into your build output if you like. See [`gulp-concat`](https://www.npmjs.org/package/gulp-concat) for more info.
 
-#### 4. Use templates in your Ember views:
-```html
-<script>
-  var HeaderView = Ember.View.extend({
-    template: Ember.TEMPLATES.App.header
-  });
-</script>
-```
-
-## Optional steps
-
-#### Change the input/output paths
-
-* **Source template location:** Change the glob passed to `gulp.src()`
-* **Output filename:** Change the filename passed to `concat()`
-* **Output directory:** Change the directory passed to `gulp.dest()`
+#### 4. Use templates with the build tool `ember-rocks`(unofficial) or `ember-cli`(official)
