@@ -7,7 +7,7 @@ module.exports = function(opts) {
   'use strict';
 
   opts = opts || {};
-  var compilerOptions = opts.compilerOptions || {};
+  var compilerOptions = opts.compilerOptions || false;
   var handlebars = opts.handlebars || require('handlebars');
 
   return through2.obj(function(file, enc, callback) {
@@ -31,9 +31,12 @@ module.exports = function(opts) {
       }
       return handlebars.precompile(ast, options).toString();
     };
+
+    // if HTMLBars, opts.compiler is expected to be passed in
+    var isHTMLBars =  (typeof opts.compiler === 'function');
     // defaultCompiler used to render any handlebars templates
     // `opts.compiler` allows third party to override the internal compiler
-    var compiler = (typeof opts.compiler === 'function') ? opts.compiler : defaultCompiler;
+    var compiler = isHTMLBars ? opts.compiler : defaultCompiler;
     try {
       compiled = compiler(contents, compilerOptions);
     }
@@ -43,6 +46,9 @@ module.exports = function(opts) {
       }));
       return callback();
     }
+
+    // If HTMLBars, output would be prefixed with Ember.HTMLBars.template function
+    compiled = isHTMLBars ? 'export default Ember.HTMLBars.template(' + compiled + ');' : compiled;
 
     file.contents = new Buffer(compiled);
     file.path = gutil.replaceExtension(file.path, '.js');
