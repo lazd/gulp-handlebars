@@ -1,4 +1,2 @@
-Parse error on line 1:
 ...syntax error: {{foo }}}
 -----------------------^
-Expecting 'CLOSE', 'OPEN_SEXPR', 'ID', 'STRING', 'NUMBER', 'BOOLEAN', 'DATA', got 'CLOSE_UNESCAPED'
