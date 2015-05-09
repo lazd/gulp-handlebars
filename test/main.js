@@ -35,7 +35,7 @@ describe('gulp-handlebars', function() {
       stream.on('error', function(err) {
         err.fileName.should.equal('test/fixtures/Invalid.hbs'),
         err.should.be.an.instanceOf(Error);
-        err.message.should.equal(getExpectedString('Error.txt'));
+        err.message.should.containEql(getExpectedString('Error.txt'));
         done();
       });
 
