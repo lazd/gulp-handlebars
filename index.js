@@ -48,15 +48,12 @@ module.exports = function(opts) {
     file.path = gutil.replaceExtension(file.path, '.js');
 
     // Options that take effect when used with gulp-define-module
-    file.defineModuleOptions = {
-      require: {
-        Handlebars: 'handlebars'
-      },
-      context: {
-        handlebars: 'Handlebars.template(<%= contents %>)'
-      },
-      wrapper: '<%= handlebars %>'
-    };
+    file.defineModuleOptions = file.defineModuleOptions || {};
+    file.defineModuleOptions.require = file.defineModuleOptions.require || {};
+    file.defineModuleOptions.require.Handlebars = 'handlebars';
+    file.defineModuleOptions.context = file.defineModuleOptions.context || {};
+    file.defineModuleOptions.context.handlebars = 'Handlebars.template(<%= contents %>)';
+    file.defineModuleOptions.wrapper = '<%= handlebars %>';
 
     callback(null, file);
   });
