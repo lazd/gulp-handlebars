@@ -85,47 +85,6 @@ See the [amd example](examples/amd) for a full example of compiling templates to
 `gulp-handlebars` also sets a default [`options.require`](https://github.com/wbyoung/gulp-define-module#optionsrequire) of `{ Handlebars: 'handlebars' }` for [`gulp-define-module`][gulp-define-module] so Handlebars will be present in when defining AMD, Node, CommonJS, or hybrid modules. You can change this by passing a different `options.require` when you invoke `gulp-define-module`.
 
 
-## Compiling templates for use in Ember applications
-
-See the [ember example](examples/ember) for a full example of compiling templates for Ember.
-
-You can use [`ember-handlebars`][ember-handlebars] to compile templates for use within Ember:
-
-#### gulpfile.js
-```js
-gulp.task('templates', function(){
-  gulp.src('source/templates/*.hbs')
-    .pipe(handlebars({
-      handlebars: require('ember-handlebars')
-    }))
-    .pipe(wrap('Ember.Handlebars.template(<%= contents %>)'))
-    .pipe(declare({
-      namespace: 'Ember.TEMPLATES',
-      noRedeclare: true, // Avoid duplicate declarations
-    }))
-    .pipe(concat('templates.js'))
-    .pipe(gulp.dest('build/js/'));
-});
-```
-
-**Note:** When compiling Ember templates to a module using `gulp-define-module`, be sure to set `options.context.handlebars` accordingly:
-
-```js
-gulp.task('templates', function(){
-  gulp.src('source/templates/*.hbs')
-    .pipe(handlebars({
-      handlebars: require('ember-handlebars')
-    }))
-    .pipe(defineModule('amd', {
-      context: {
-        handlebars: 'Ember.Handlebars.template(<%= contents %>)'
-      }
-    }))
-    .pipe(gulp.dest('build/js/'));
-});
-```
-
-
 ## Compiling partials
 
 The following example will precompile and register partials for all `.hbs` files in `source/templates/` that start with an underscore, then store the result as `build/js/partials.js`;
@@ -288,4 +247,3 @@ Custom compiler function. By default, the precompile method of the provided Hand
 [gulp-define-module]: https://www.npmjs.org/package/gulp-define-module
 [gulp-declare]: https://www.npmjs.org/package/gulp-declare
 [gulp-wrap]: https://www.npmjs.org/package/gulp-wrap
-[ember-handlebars]: https://www.npmjs.org/package/ember-handlebars
