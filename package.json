@@ -4,9 +4,9 @@
   "description": "Handlebars plugin for gulp",
   "main": "index.js",
   "dependencies": {
-    "handlebars": "^3.0.0",
+    "handlebars": "^4.0.0",
     "plugin-error": "^0.1.2",
-    "through2": "^0.6.3"
+    "through2": "^2.0.3"
   },
   "devDependencies": {
     "vinyl": "^2.1.0",
