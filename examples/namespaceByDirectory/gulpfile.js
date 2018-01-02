@@ -5,9 +5,10 @@ var declare = require('gulp-declare');
 /** REMOVE ME **/ var handlebars = require('../../');
 /** USE ME **/ // var handlebars = require('gulp-handlebars');
 
-gulp.task('templates', function() {
+// Default task
+gulp.task('default', function() {
   // Load templates from the client/templates/ folder relative to where gulp was executed
-  gulp.src('client/templates/**/*.hbs')
+  return gulp.src('client/templates/**/*.hbs')
     // Compile each Handlebars template source file to a template function
     .pipe(handlebars())
     // Wrap each template function in a call to Handlebars.template
@@ -28,6 +29,3 @@ gulp.task('templates', function() {
     // Write the output into the build folder
     .pipe(gulp.dest('build/js/'));
 });
-
-// Default task
-gulp.task('default', ['templates']);

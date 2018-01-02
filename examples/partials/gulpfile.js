@@ -36,13 +36,15 @@ gulp.task('templates', function() {
     .pipe(gulp.dest('build/js/'));
 });
 
-gulp.task('copy', function(){
-  gulp.src('node_modules/handlebars/dist/handlebars.runtime.js')
+gulp.task('copy-js', function(){
+  return gulp.src('node_modules/handlebars/dist/handlebars.runtime.js')
     .pipe(gulp.dest('build/js/'));
+});
 
-  gulp.src('source/index.html')
+gulp.task('copy-html', function(){
+  return gulp.src('source/index.html')
     .pipe(gulp.dest('build/'));
 });
 
 // Default task
-gulp.task('default', ['copy', 'templates']);
+gulp.task('default', gulp.series(gulp.parallel('copy-js', 'copy-html'), 'templates'));

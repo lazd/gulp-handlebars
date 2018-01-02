@@ -10,14 +10,14 @@
   },
   "devDependencies": {
     "vinyl": "^2.1.0",
-    "gulp": "^3.8.11",
+    "gulp": "^4.0.0",
     "gulp-concat": "^2.5.2",
     "gulp-declare": "^0.3.0",
     "gulp-define-module": "^0.1.1",
-    "gulp-wrap": "^0.11.0",
-    "mocha": "^2.1.0",
+    "gulp-wrap": "^0.13.0",
+    "mocha": "^4.1.0",
     "nsdeclare": "^0.1.0",
-    "should": "^5.0.1"
+    "should": "^13.2.0"
   },
   "scripts": {
     "test": "./node_modules/.bin/mocha"
