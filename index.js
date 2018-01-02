@@ -45,7 +45,7 @@ module.exports = function(opts) {
     }
 
     file.contents = new Buffer(compiled);
-    file.path = gutil.replaceExtension(file.path, '.js');
+    file.extname = '.js';
 
     // Options that take effect when used with gulp-define-module
     file.defineModuleOptions = {
