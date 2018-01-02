@@ -9,6 +9,36 @@ Install `gulp-handlebars` as a development dependency:
 npm install --save-dev gulp-handlebars
 ```
 
+## VERSION MISMATCH ERROR?!
+
+Are you seeing this error when using pre-compliled templates?
+
+```
+Error: Template was precompiled with an older version of Handlebars
+```
+
+If you're getting a version mismatch error when using pre-compliled templates, **install the handlebars version of your choice and pass it as [`options.handlebars`](#optionshandlebars)**, then include the appropriate runtime in your client-side application.
+
+Here's how you install your own version of handlebars:
+
+```
+npm install --save handlebars@^4.0.0
+```
+
+And here's how you use that verison of handlebars in `gulp-handlebars`:
+
+```js
+handlebars({
+  handlebars: require('handlebars')
+})
+```
+
+The runtime is located in:
+
+```
+node_modules/handlebars/dist/handlebars.js
+```
+
 ## Compiling templates for the browser
 
 [`gulp-declare`][gulp-declare] and [`gulp-wrap`][gulp-wrap] can be used to safely declare template namespaces and make templates available for use in the browser.
