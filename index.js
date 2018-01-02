@@ -1,5 +1,5 @@
 var through2 = require('through2');
-var gutil = require('gulp-util');
+var PluginError = require('plugin-error');
 
 const PLUGIN_NAME = 'gulp-handlebars';
 
@@ -16,7 +16,7 @@ module.exports = function(opts) {
     }
 
     if (file.isStream()) {
-      this.emit('error', new gutil.PluginError(PLUGIN_NAME, 'Streaming not supported'));
+      this.emit('error', new PluginError(PLUGIN_NAME, 'Streaming not supported'));
       return callback();
     }
 
@@ -38,7 +38,7 @@ module.exports = function(opts) {
       compiled = compiler(contents, compilerOptions);
     }
     catch (err) {
-      this.emit('error', new gutil.PluginError(PLUGIN_NAME, err, {
+      this.emit('error', new PluginError(PLUGIN_NAME, err, {
         fileName: file.path
       }));
       return callback();

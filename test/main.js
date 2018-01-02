@@ -1,14 +1,14 @@
 var handlebarsPlugin = require('../');
 var defineModule = require('gulp-define-module');
 var should = require('should');
-var gutil = require('gulp-util');
+var Vinyl = require('vinyl');
 var fs = require('fs');
 var path = require('path');
 require('mocha');
 
 var getFixture = function(filePath) {
   filePath = path.join('test', 'fixtures', filePath);
-  return new gutil.File({
+  return new Vinyl({
     path: filePath,
     cwd: path.join('test', 'fixtures'),
     base: path.dirname(filePath),
