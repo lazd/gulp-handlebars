@@ -1,5 +1,6 @@
 var through2 = require('through2');
 var PluginError = require('plugin-error');
+const path = require('path');
 
 const PLUGIN_NAME = 'gulp-handlebars';
 
@@ -45,7 +46,15 @@ module.exports = function(opts) {
     }
 
     file.contents = new Buffer(compiled);
-    file.extname = '.js';
+
+    /**
+     * Update the file's extension gulp-version-agnostically. Set `base` to `null` so that `path`
+     * respects our updated `ext` value.
+     */
+    const pathParts = path.parse(file.path);
+    pathParts.base = null;
+    pathParts.ext = '.js';
+    file.path = path.format(pathParts);
 
     // Options that take effect when used with gulp-define-module
     file.defineModuleOptions = {
