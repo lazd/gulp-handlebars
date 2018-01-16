@@ -1,6 +1,6 @@
 {
   "name": "gulp-handlebars",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "Handlebars plugin for gulp",
   "main": "index.js",
   "dependencies": {
