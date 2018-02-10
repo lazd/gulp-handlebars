@@ -17,7 +17,7 @@ var getFixture = function(filePath) {
 };
 
 var getExpectedString = function(filePath) {
-  return fs.readFileSync(path.join('test', 'expected', filePath), 'utf8');
+  return fs.readFileSync(path.join('test', 'expected', filePath), 'utf8').replace(/\r\n/g, '\n');
 };
 
 var fileMatchesExpected = function(file, fixtureFilename, expectedFilename) {
@@ -33,7 +33,7 @@ describe('gulp-handlebars', function() {
       var invalidTemplate = getFixture('Invalid.hbs');
 
       stream.on('error', function(err) {
-        err.fileName.should.equal('test/fixtures/Invalid.hbs'),
+        err.fileName.should.equal(path.normalize('test/fixtures/Invalid.hbs'));
         err.should.be.an.instanceOf(Error);
         err.message.should.equal(getExpectedString('Error.txt'));
         done();
