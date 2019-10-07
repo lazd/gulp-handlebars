@@ -4,7 +4,7 @@
   "description": "Handlebars plugin for gulp",
   "main": "index.js",
   "dependencies": {
-    "handlebars": "^4.0.0",
+    "handlebars": "^4.3.0",
     "plugin-error": "^0.1.2",
     "replace-ext": "^1.0.0",
     "through2": "^2.0.3"

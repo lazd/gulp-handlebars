@@ -5,3 +5,4 @@ build
 # The output of the singleModule example
 examples/singleModule/templates/index.js
 *.log
+yarn.lock
