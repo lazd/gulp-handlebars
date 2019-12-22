@@ -59,7 +59,7 @@ gulp.task('templates', function() {
         processPartialName: function(fileName) {
           // Strip the extension and the underscore
           // Escape the output with JSON.stringify
-          return JSON.stringify(path.basename(fileName, '.js').substr(1));
+          return JSON.stringify(path.basename(fileName, '.js'));
         }
       }
     }));
