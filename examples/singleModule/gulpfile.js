@@ -27,6 +27,6 @@ gulp.task('default', function() {
     .pipe(concat('index.js'))
     // Add the Handlebars module in the final output
     .pipe(wrap('var Handlebars = require("handlebars");\n <%= contents %>'))
-    // WRite the output into the templates folder
+    // Write the output into the templates folder
     .pipe(gulp.dest('templates/'));
 });
