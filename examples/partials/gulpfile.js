@@ -8,21 +8,20 @@ var merge = require('merge-stream');
 /** USE ME **/ // var handlebars = require('gulp-handlebars');
 
 gulp.task('templates', function() {
-  // Assume all partials start with an underscore
-  // You could also put them in a folder such as source/templates/partials/*.hbs
-  var partials = gulp.src(['source/templates/_*.hbs'])
+  // Assume all partials are in a folder such as source/partials/**/*.hbs
+  var partials = gulp.src(['source/partials/**/*.hbs'])
     .pipe(handlebars())
     .pipe(wrap('Handlebars.registerPartial(<%= processPartialName(file.relative) %>, Handlebars.template(<%= contents %>));', {}, {
       imports: {
         processPartialName: function(fileName) {
           // Strip the extension and the underscore
           // Escape the output with JSON.stringify
-          return JSON.stringify(path.basename(fileName, '.js').substr(1));
+          return JSON.stringify(path.basename(fileName, '.js'));
         }
       }
     }));
 
-  var templates = gulp.src('source/templates/**/[^_]*.hbs')
+  var templates = gulp.src('source/templates/**/*.hbs')
     .pipe(handlebars())
     .pipe(wrap('Handlebars.template(<%= contents %>)'))
     .pipe(declare({
