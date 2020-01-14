@@ -117,7 +117,7 @@ See the [amd example](examples/amd) for a full example of compiling templates to
 
 ## Compiling partials
 
-The following example will precompile and register partials for all `.hbs` files in `source/templates/` that start with an underscore, then store the result as `build/js/partials.js`;
+The following example will precompile and register partials for all `.hbs` files in `source/partials/`, then store the result as `build/js/partials.js`;
 
 ```javascript
 var path = require('path');
@@ -127,16 +127,15 @@ var concat = require('gulp-concat');
 var handlebars = require('gulp-handlebars');
 
 gulp.task('partials', function() {
-  // Assume all partials start with an underscore
-  // You could also put them in a folder such as source/templates/partials/*.hbs
-  gulp.src(['source/templates/_*.hbs'])
+  // Assume all partials are in a folder such as source/partials/**/*.hbs
+  gulp.src(['source/partials/**/*.hbs'])
     .pipe(handlebars())
     .pipe(wrap('Handlebars.registerPartial(<%= processPartialName(file.relative) %>, Handlebars.template(<%= contents %>));', {}, {
       imports: {
         processPartialName: function(fileName) {
           // Strip the extension and the underscore
           // Escape the output with JSON.stringify
-          return JSON.stringify(path.basename(fileName, '.js').substr(1));
+          return JSON.stringify(path.basename(fileName, '.js'));
         }
       }
     }))
