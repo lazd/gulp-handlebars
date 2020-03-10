@@ -52,7 +52,7 @@ module.exports = function(opts) {
     // Options that take effect when used with gulp-define-module
     file.defineModuleOptions = {
       require: {
-        Handlebars: 'handlebars'
+        Handlebars: 'handlebars/runtime'
       },
       context: {
         handlebars: 'Handlebars.template(<%= contents %>)'
